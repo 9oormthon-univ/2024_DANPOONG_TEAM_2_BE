@@ -21,3 +21,21 @@ logging:
   level:
     org.hibernate.sql: debug
     org.hibernate.type: trace
+
+myapp:
+  api-url: ${myapp.api-url}
+  local-url: ${myapp.local-url}
+
+jwt:
+  secret: ${jwt.secret}
+
+token:
+  expire:
+    time:
+      access: ${token.expire.time.access}
+
+oauth:
+  kakao:
+    client-id: ${oauth.kakao.client-id}
+    redirect-uri: ${oauth.kakao.redirect-uri}
+    id-token-url: ${oauth.kakao.id-token-url}
