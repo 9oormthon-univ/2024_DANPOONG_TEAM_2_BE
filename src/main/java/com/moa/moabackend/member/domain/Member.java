@@ -1,6 +1,9 @@
 package com.moa.moabackend.member.domain;
 
 import com.moa.moabackend.global.entity.BaseEntity;
+import com.moa.moabackend.store.domain.StorePunding;
+import com.moa.moabackend.store.domain.StoreScrap;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -8,6 +11,9 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,8 +41,20 @@ public class Member extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private SocialType socialType;
 
+    @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<StorePunding> storePundings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<StoreScrap> storeScraps = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<Mileage> mileages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<VoucherBarcode> voucherBarcodes = new ArrayList<>();
+
     @Builder
-    public Member(Role role, String email, String picture, String nickname, SocialType socialType) {
+    private Member(Role role, String email, String picture, String nickname, SocialType socialType) {
         this.role = role;
         this.email = email;
         this.picture = picture;
