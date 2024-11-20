@@ -1,6 +1,7 @@
 package com.moa.moabackend.member.api;
 
 import com.moa.moabackend.global.template.RspTemplate;
+import com.moa.moabackend.member.api.dto.request.InvestmentGoalUpdateReqDto;
 import com.moa.moabackend.member.api.dto.request.MemberTypeUpdateReqDto;
 import com.moa.moabackend.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,4 +19,11 @@ public interface MemberControllerDocs {
     RspTemplate<Void> updateMemberType(@AuthenticationPrincipal Member member,
                                        @RequestBody MemberTypeUpdateReqDto memberTypeUpdateReqDto);
 
+    @Operation(summary = "투자 목표 변경 API", description = "투자 목표를 변경하는 API 입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "투자 목표 변경 성공")
+    })
+    RspTemplate<Void> updateInvestmentGoal(@AuthenticationPrincipal Member member,
+                                           @RequestBody InvestmentGoalUpdateReqDto investmentGoalUpdateReqDto);
+    
 }

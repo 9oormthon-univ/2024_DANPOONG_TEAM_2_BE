@@ -1,6 +1,7 @@
 package com.moa.moabackend.member.api;
 
 import com.moa.moabackend.global.template.RspTemplate;
+import com.moa.moabackend.member.api.dto.request.InvestmentGoalUpdateReqDto;
 import com.moa.moabackend.member.api.dto.request.MemberTypeUpdateReqDto;
 import com.moa.moabackend.member.application.MemberService;
 import com.moa.moabackend.member.domain.Member;
@@ -25,7 +26,14 @@ public class MemberController implements MemberControllerDocs {
     public RspTemplate<Void> updateMemberType(@AuthenticationPrincipal Member member,
                                               @RequestBody MemberTypeUpdateReqDto memberTypeUpdateReqDto) {
         memberService.updateMemberType(member.getEmail(), memberTypeUpdateReqDto.toMemberType());
-        return new RspTemplate<>(HttpStatus.OK, "회원 유형 수정 완료");
+        return new RspTemplate<>(HttpStatus.OK, "회원 유형 수정");
+    }
+
+    @PatchMapping("/investment-goal")
+    public RspTemplate<Void> updateInvestmentGoal(@AuthenticationPrincipal Member member,
+                                                  @RequestBody InvestmentGoalUpdateReqDto investmentGoalUpdateReqDto) {
+        memberService.updateInvestmentGoal(member.getEmail(), investmentGoalUpdateReqDto.investmentGoal());
+        return new RspTemplate<>(HttpStatus.OK, "투자 목표 수정");
     }
 
 }

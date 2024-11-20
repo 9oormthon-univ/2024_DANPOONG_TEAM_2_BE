@@ -39,6 +39,7 @@ public class AuthMemberService {
                         .nickname(userInfo.nickname())
                         .picture(userPicture)
                         .socialType(provider)
+                        .investmentGoal("투자 그래프 끌어~올려~!")
                         .role(Role.ROLE_USER)
                         .build()
         );

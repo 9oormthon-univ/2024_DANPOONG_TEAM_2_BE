@@ -23,4 +23,10 @@ public class MemberService {
         member.updateMemberType(memberType);
     }
 
+    @Transactional
+    public void updateInvestmentGoal(String email, String investmentGoal) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+        member.updateInvestmentGoal(investmentGoal);
+    }
+
 }
