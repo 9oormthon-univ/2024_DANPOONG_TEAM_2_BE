@@ -41,6 +41,9 @@ public class Member extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private SocialType socialType;
 
+    @Enumerated(value = EnumType.STRING)
+    private MemberType memberType;
+
     @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<StorePunding> storePundings = new ArrayList<>();
 
@@ -60,6 +63,10 @@ public class Member extends BaseEntity {
         this.picture = picture;
         this.nickname = nickname;
         this.socialType = socialType;
+    }
+
+    public void updateMemberType(MemberType memberType) {
+        this.memberType = memberType;
     }
 
 }
