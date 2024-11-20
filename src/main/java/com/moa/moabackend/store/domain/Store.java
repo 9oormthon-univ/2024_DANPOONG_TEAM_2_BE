@@ -36,6 +36,8 @@ public class Store extends BaseEntity {
 
     private String caption;
 
+    private String content;
+
     private long fundingCurrent;
 
     private long fundingTarget;
@@ -59,12 +61,15 @@ public class Store extends BaseEntity {
     private List<VoucherBarcode> voucherBarcodes = new ArrayList<>();
 
     @Builder
-    private Store(String name, String category, String profileImage, String caption, long fundingCurrent,
-                  long fundingTarget, StoreLocation storeLocation) {
+    private Store(Long id, String name, String category, String profileImage, String caption, String content,
+            long fundingCurrent,
+            long fundingTarget, StoreLocation storeLocation) {
+        this.id = id;
         this.name = name;
         this.category = category;
         this.profileImage = profileImage;
         this.caption = caption;
+        this.content = content;
         this.fundingCurrent = fundingCurrent;
         this.fundingTarget = fundingTarget;
         this.storeLocation = storeLocation;
