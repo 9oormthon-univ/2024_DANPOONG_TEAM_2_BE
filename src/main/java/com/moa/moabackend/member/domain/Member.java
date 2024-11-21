@@ -38,6 +38,8 @@ public class Member extends BaseEntity {
 
     private String nickname;
 
+    private String investmentGoal;
+
     @Enumerated(value = EnumType.STRING)
     private SocialType socialType;
 
@@ -56,17 +58,26 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<VoucherBarcode> voucherBarcodes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<Coupon> coupons = new ArrayList<>();
+
     @Builder
-    private Member(Role role, String email, String picture, String nickname, SocialType socialType) {
+    private Member(Role role, String email, String picture, String nickname, String investmentGoal,
+                   SocialType socialType) {
         this.role = role;
         this.email = email;
         this.picture = picture;
         this.nickname = nickname;
+        this.investmentGoal = investmentGoal;
         this.socialType = socialType;
     }
 
     public void updateMemberType(MemberType memberType) {
         this.memberType = memberType;
+    }
+
+    public void updateInvestmentGoal(String investmentGoal) {
+        this.investmentGoal = investmentGoal;
     }
 
 }

@@ -1,9 +1,10 @@
 package com.moa.moabackend.member.domain;
 
 import com.moa.moabackend.global.entity.BaseEntity;
-import com.moa.moabackend.store.domain.Store;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,28 +19,33 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Mileage extends BaseEntity {
+public class Coupon extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "mileage_id")
+    @Column(name = "coupon_id")
     private Long id;
 
     private int amount;
+
+    private String description;
+
+    private String expirationDate;
+
+    @Enumerated(value = EnumType.STRING)
+    private CouponStatus couponStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id")
-    private Store store;
-
     @Builder
-    private Mileage(int amount, Member member, Store store) {
+    private Coupon(int amount, String description, String expirationDate, Member member) {
         this.amount = amount;
+        this.description = description;
+        this.expirationDate = expirationDate;
+        this.couponStatus = CouponStatus.UNUSED;
         this.member = member;
-        this.store = store;
     }
 
 }
