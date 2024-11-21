@@ -7,7 +7,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moa.moabackend.store.api.dto.request.SearchByLocationReqDto;
 import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.AddressResDto;
 import com.moa.moabackend.store.api.dto.response.StoreResDto;
@@ -79,7 +79,12 @@ public class StoreService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new EntityNotFoundException("ID가 일치하는 상점을 찾을 수 없습니다."));
 
+        return makeStoreDto(storeId, store);
+    }
+
+    public StoreResDto makeStoreDto(Long storeId, Store store) {
         StoreResDto result = new StoreResDto(
+                storeId,
                 store.getName(),
                 store.getCategory(),
                 store.getProfileImage(),
@@ -162,6 +167,17 @@ public class StoreService {
         }
 
         // 3. 좌표 주변에 있는 상점들의 상점 정보 반환
+        return result;
+    }
+
+    public List<StoreResDto> searchStoreByAddress(SearchByLocationReqDto payload) {
+        List<StoreLocation> storeLocation = storeLocationRepository.findByAddressContaining(payload.address())
+                .orElseThrow(() -> new EntityNotFoundException("주소가 일치하는 상점을 찾을 수 없습니다."));
+
+        List<StoreResDto> result = new ArrayList<StoreResDto>();
+        for (StoreLocation loc : storeLocation) {
+            result.add(makeStoreDto(loc.getStore().getId(), loc.getStore()));
+        }
         return result;
     }
 

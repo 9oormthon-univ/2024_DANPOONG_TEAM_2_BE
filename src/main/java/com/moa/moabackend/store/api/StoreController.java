@@ -1,7 +1,7 @@
 package com.moa.moabackend.store.api;
 
 import java.io.IOException;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.moa.moabackend.global.template.RspTemplate;
+import com.moa.moabackend.store.api.dto.request.SearchByLocationReqDto;
 import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.StoreResDto;
 import com.moa.moabackend.store.application.StoreService;
@@ -103,15 +104,20 @@ public class StoreController implements StoreControllerDocs {
         return new RspTemplate<>(HttpStatus.OK, "상점 삭제", true);
     }
 
-    // @GetMapping("/map")
-    // public RspTemplate<List<Number>> searchStoreByLocation(
-    // @RequestBody SearchByLocationReqDto searchByLocationReqDto) {
-    // List<Number> stores =
-    // storeService.getStoresByLocation(searchByLocationReqDto.radius(),
-    // searchByLocationReqDto.x(),
-    // searchByLocationReqDto.y()).stream().map(store ->
-    // store.getId()).collect(Collectors.toList());
-
-    // return new RspTemplate<>(HttpStatus.OK, "좌표 주변 상점 찾기", stores);
-    // }
+    @GetMapping("/map/search")
+    @Transactional(readOnly = true)
+    public RspTemplate<List<StoreResDto>> searchStoreByAddress(
+            @RequestBody SearchByLocationReqDto searchByLocationReqDto) {
+        List<StoreResDto> result = null;
+        try {
+            List<StoreResDto> store = storeService.searchStoreByAddress(searchByLocationReqDto);
+            result = store;
+        } catch (EntityNotFoundException e) {
+            return new RspTemplate<>(HttpStatus.NOT_FOUND, "검색된 상점이 없습니다.", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "상점을 찾는 중 문제가 발생했습니다.", null);
+        }
+        return new RspTemplate<>(HttpStatus.OK, "주소로 상점 찾기", result);
+    }
 }
