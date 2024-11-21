@@ -5,6 +5,7 @@ import com.moa.moabackend.member.api.dto.request.InvestmentGoalUpdateReqDto;
 import com.moa.moabackend.member.api.dto.request.MemberTypeUpdateReqDto;
 import com.moa.moabackend.member.api.dto.response.MemberCouponsResDto;
 import com.moa.moabackend.member.api.dto.response.MemberInfoResDto;
+import com.moa.moabackend.member.api.dto.response.MyPundingHistoryResDto;
 import com.moa.moabackend.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -39,5 +40,11 @@ public interface MemberControllerDocs {
             @ApiResponse(responseCode = "200", description = "쿠폰 조회 성공")
     })
     RspTemplate<MemberCouponsResDto> findCoupons(@AuthenticationPrincipal Member member);
+
+    @Operation(summary = "내 펀딩 내역 조회 API", description = "내 펀딩 내역을 조회하는 API 입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "펀딩 내역 조회 성공")
+    })
+    RspTemplate<MyPundingHistoryResDto> findMyPundingHistory(@AuthenticationPrincipal Member member);
 
 }
