@@ -1,5 +1,6 @@
 package com.moa.moabackend.member.domain;
 
+import com.moa.moabackend.global.entity.BaseEntity;
 import com.moa.moabackend.store.domain.Store;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Mileage {
+public class Mileage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,5 +41,5 @@ public class Mileage {
         this.member = member;
         this.store = store;
     }
-    
+
 }
