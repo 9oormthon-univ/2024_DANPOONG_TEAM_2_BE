@@ -58,6 +58,9 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<VoucherBarcode> voucherBarcodes = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<Coupon> coupons = new ArrayList<>();
+
     @Builder
     private Member(Role role, String email, String picture, String nickname, String investmentGoal,
                    SocialType socialType) {

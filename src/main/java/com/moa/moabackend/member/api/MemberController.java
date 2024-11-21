@@ -3,10 +3,12 @@ package com.moa.moabackend.member.api;
 import com.moa.moabackend.global.template.RspTemplate;
 import com.moa.moabackend.member.api.dto.request.InvestmentGoalUpdateReqDto;
 import com.moa.moabackend.member.api.dto.request.MemberTypeUpdateReqDto;
+import com.moa.moabackend.member.api.dto.response.MemberCouponsResDto;
 import com.moa.moabackend.member.application.MemberService;
 import com.moa.moabackend.member.domain.Member;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +36,11 @@ public class MemberController implements MemberControllerDocs {
                                                   @RequestBody InvestmentGoalUpdateReqDto investmentGoalUpdateReqDto) {
         memberService.updateInvestmentGoal(member.getEmail(), investmentGoalUpdateReqDto.investmentGoal());
         return new RspTemplate<>(HttpStatus.OK, "투자 목표 수정");
+    }
+
+    @GetMapping("/coupons")
+    public RspTemplate<MemberCouponsResDto> findCoupons(@AuthenticationPrincipal Member member) {
+        return new RspTemplate<>(HttpStatus.OK, "내 쿠폰 조회", memberService.findCoupons(member.getEmail()));
     }
 
 }
