@@ -18,5 +18,7 @@ public record StoreResDto(
         Double y,
         List<CertifiedType> certifiedType,
         LocalDate startAt,
-        LocalDate endAt) {
+        LocalDate endAt,
+        Long fundedCount,
+        Long likeCount) {
 }

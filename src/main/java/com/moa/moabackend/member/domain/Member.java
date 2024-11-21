@@ -1,7 +1,7 @@
 package com.moa.moabackend.member.domain;
 
 import com.moa.moabackend.global.entity.BaseEntity;
-import com.moa.moabackend.store.domain.StorePunding;
+import com.moa.moabackend.store.domain.StoreFunding;
 import com.moa.moabackend.store.domain.StoreScrap;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -49,7 +49,7 @@ public class Member extends BaseEntity {
     private MemberType memberType;
 
     @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<StorePunding> storePundings = new ArrayList<>();
+    private List<StoreFunding> storePundings = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<StoreScrap> storeScraps = new ArrayList<>();
@@ -65,7 +65,7 @@ public class Member extends BaseEntity {
 
     @Builder
     private Member(Role role, String email, String picture, String nickname, String investmentGoal,
-                   SocialType socialType) {
+            SocialType socialType) {
         this.role = role;
         this.email = email;
         this.picture = picture;

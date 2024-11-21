@@ -7,6 +7,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,31 +18,31 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.AddressResDto;
+import com.moa.moabackend.store.api.dto.response.StoreResDto;
 import com.moa.moabackend.store.domain.Store;
 import com.moa.moabackend.store.domain.StoreImage;
 import com.moa.moabackend.store.domain.StoreLocation;
+import com.moa.moabackend.store.domain.repository.StoreFundingRepository;
 import com.moa.moabackend.store.domain.repository.StoreImageRepository;
 import com.moa.moabackend.store.domain.repository.StoreLocationRepository;
 import com.moa.moabackend.store.domain.repository.StoreRepository;
+import com.moa.moabackend.store.domain.repository.StoreScrapRepository;
 import com.moa.moabackend.store.exception.RevGeocodeNotFoundException;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class StoreService {
     private final StoreRepository storeRepository;
     private final StoreImageRepository storeImageRepository;
     private final StoreLocationRepository storeLocationRepository;
+    private final StoreFundingRepository storeFundingRepository;
+    private final StoreScrapRepository storeScrapRepository;
 
     @Value("${KAKAO_API_KEY}")
     private String kakaoApiKey;
-
-    public StoreService(StoreRepository storeRepository, StoreImageRepository storeImageRepository,
-            StoreLocationRepository storeLocationRepository) {
-        this.storeRepository = storeRepository;
-        this.storeImageRepository = storeImageRepository;
-        this.storeLocationRepository = storeLocationRepository;
-    }
 
     @Transactional
     public Store createStore(StoreReqDto payload) throws JsonProcessingException, IOException, InterruptedException {
@@ -72,12 +74,29 @@ public class StoreService {
         return store;
     }
 
-    public Store getStore(Long storeId) {
+    public StoreResDto getStore(Long storeId) {
         // ID로 상점 찾기
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new EntityNotFoundException("ID가 일치하는 상점을 찾을 수 없습니다."));
 
-        return store;
+        StoreResDto result = new StoreResDto(
+                store.getName(),
+                store.getCategory(),
+                store.getProfileImage(),
+                store.getCaption(),
+                store.getFundingTarget(),
+                store.getFundingCurrent(),
+                store.getStoreImages().stream().map(image -> image.getImageUrl()).collect(Collectors.toList()),
+                store.getContent(),
+                store.getStoreLocation().getX(),
+                store.getStoreLocation().getY(),
+                store.getCertifiedType(),
+                store.getStartAt(),
+                store.getEndAt(),
+                storeFundingRepository.countByStore_id(storeId),
+                storeScrapRepository.countByStore_id(storeId));
+
+        return result;
     }
 
     @Transactional
@@ -93,7 +112,7 @@ public class StoreService {
         Store patch = Store.builder().id(storeId).name(payload.name()).category(payload.category())
                 .profileImage(payload.profileImage()).certifiedType(payload.certifiedType()).caption(payload.caption())
                 .content(payload.content()).fundingTarget(payload.fundingTarget())
-                .fundingTarget(payload.fundingTarget()).endAt(payload.endAt()).build();
+                .endAt(payload.endAt()).build();
         store.updateTo(patch);
 
         if (payload.images() != null) {
@@ -122,7 +141,8 @@ public class StoreService {
     }
 
     public void deleteStore(Long storeId) {
-        Store store = getStore(storeId);
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new EntityNotFoundException("ID가 일치하는 상점을 찾을 수 없습니다."));
         storeRepository.delete(store);
     }
 

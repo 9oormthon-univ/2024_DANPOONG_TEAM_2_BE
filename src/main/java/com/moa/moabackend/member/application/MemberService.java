@@ -11,8 +11,8 @@ import com.moa.moabackend.member.domain.MemberType;
 import com.moa.moabackend.member.domain.repository.CouponRepository;
 import com.moa.moabackend.member.domain.repository.MemberRepository;
 import com.moa.moabackend.member.exception.MemberNotFoundException;
-import com.moa.moabackend.store.domain.StorePunding;
-import com.moa.moabackend.store.domain.repository.StorePundingRepository;
+import com.moa.moabackend.store.domain.StoreFunding;
+import com.moa.moabackend.store.domain.repository.StoreFundingRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final CouponRepository couponRepository;
-    private final StorePundingRepository storePundingRepository;
+    private final StoreFundingRepository storePundingRepository;
 
     public MemberInfoResDto getUserInfo(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
@@ -55,13 +55,12 @@ public class MemberService {
         List<Coupon> coupons = couponRepository.findByMember(member);
 
         List<CouponInfoResDto> couponInfoResDtos = coupons.stream()
-                .map(coupon ->
-                        CouponInfoResDto.of(
-                                coupon.getId(),
-                                coupon.getAmount(),
-                                coupon.getDescription(),
-                                coupon.getExpirationDate(),
-                                String.valueOf(coupon.getCouponStatus())))
+                .map(coupon -> CouponInfoResDto.of(
+                        coupon.getId(),
+                        coupon.getAmount(),
+                        coupon.getDescription(),
+                        coupon.getExpirationDate(),
+                        String.valueOf(coupon.getCouponStatus())))
                 .toList();
 
         return MemberCouponsResDto.from(couponInfoResDtos);
@@ -69,15 +68,14 @@ public class MemberService {
 
     public MyPundingHistoryResDto getMyPundingHistory(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
-        List<StorePunding> storePundings = storePundingRepository.findByMember(member);
+        List<StoreFunding> storePundings = storePundingRepository.findByMember(member);
 
         List<HistoryInfoResDto> historyInfoResDtos = storePundings.stream()
                 .map(storePunding -> HistoryInfoResDto.of(
                         storePunding.getStore().getId(),
                         storePunding.getCreatedAt(),
                         storePunding.getStore().getName(),
-                        storePunding.getAmount()
-                ))
+                        storePunding.getAmount()))
                 .toList();
 
         return MyPundingHistoryResDto.of(member.getMileage(), historyInfoResDtos);

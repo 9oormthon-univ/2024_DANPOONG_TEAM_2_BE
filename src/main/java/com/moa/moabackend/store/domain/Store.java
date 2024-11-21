@@ -63,7 +63,7 @@ public class Store extends BaseEntity {
     private List<StoreImage> storeImages = new ArrayList<>();
 
     @OneToMany(mappedBy = "store", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<StorePunding> storePundings = new ArrayList<>();
+    private List<StoreFunding> storeFundings = new ArrayList<>();
 
     @OneToMany(mappedBy = "store", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<StoreScrap> storeScraps = new ArrayList<>();
