@@ -42,6 +42,9 @@ public class StoreController implements StoreControllerDocs {
             return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "좌표를 주소로 변환하는데 실패했습니다.", null);
         } catch (RevGeocodeNotFoundException e) {
             return new RspTemplate<>(HttpStatus.BAD_REQUEST, "해당하는 좌표로 가게를 찾지 못했습니다.", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "상점 생성 중 문제가 발생했습니다.", null);
         }
         return new RspTemplate<>(HttpStatus.OK, "상점 생성", true);
     }
