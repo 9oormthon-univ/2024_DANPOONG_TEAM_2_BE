@@ -93,13 +93,15 @@ public class StoreController implements StoreControllerDocs {
         return new RspTemplate<>(HttpStatus.OK, "상점 삭제", true);
     }
 
-    @GetMapping("/map")
-    public RspTemplate<List<Number>> searchStoreByLocation(
-            @RequestBody SearchByLocationReqDto searchByLocationReqDto) {
-        List<Number> stores = storeService.getStoresByLocation(searchByLocationReqDto.radius(),
-                searchByLocationReqDto.x(),
-                searchByLocationReqDto.y()).stream().map(store -> store.getId()).collect(Collectors.toList());
+    // @GetMapping("/map")
+    // public RspTemplate<List<Number>> searchStoreByLocation(
+    // @RequestBody SearchByLocationReqDto searchByLocationReqDto) {
+    // List<Number> stores =
+    // storeService.getStoresByLocation(searchByLocationReqDto.radius(),
+    // searchByLocationReqDto.x(),
+    // searchByLocationReqDto.y()).stream().map(store ->
+    // store.getId()).collect(Collectors.toList());
 
-        return new RspTemplate<>(HttpStatus.OK, "좌표 주변 상점 찾기", stores);
-    }
+    // return new RspTemplate<>(HttpStatus.OK, "좌표 주변 상점 찾기", stores);
+    // }
 }
