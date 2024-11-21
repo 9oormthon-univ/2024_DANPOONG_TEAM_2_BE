@@ -5,6 +5,7 @@ import com.moa.moabackend.member.api.dto.request.InvestmentGoalUpdateReqDto;
 import com.moa.moabackend.member.api.dto.request.MemberTypeUpdateReqDto;
 import com.moa.moabackend.member.api.dto.response.MemberCouponsResDto;
 import com.moa.moabackend.member.api.dto.response.MemberInfoResDto;
+import com.moa.moabackend.member.api.dto.response.MyPundingHistoryResDto;
 import com.moa.moabackend.member.application.MemberService;
 import com.moa.moabackend.member.domain.Member;
 import org.springframework.http.HttpStatus;
@@ -47,6 +48,11 @@ public class MemberController implements MemberControllerDocs {
     @GetMapping("/coupons")
     public RspTemplate<MemberCouponsResDto> findCoupons(@AuthenticationPrincipal Member member) {
         return new RspTemplate<>(HttpStatus.OK, "내 쿠폰 조회", memberService.findCoupons(member.getEmail()));
+    }
+
+    @GetMapping("/my-punding-history")
+    public RspTemplate<MyPundingHistoryResDto> findMyPundingHistory(@AuthenticationPrincipal Member member) {
+        return new RspTemplate<>(HttpStatus.OK, "내 펀딩 내역 조회", memberService.getMyPundingHistory(member.getEmail()));
     }
 
 }

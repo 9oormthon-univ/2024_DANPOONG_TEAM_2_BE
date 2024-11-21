@@ -40,6 +40,8 @@ public class Member extends BaseEntity {
 
     private String investmentGoal;
 
+    private int mileage;
+
     @Enumerated(value = EnumType.STRING)
     private SocialType socialType;
 
@@ -69,6 +71,7 @@ public class Member extends BaseEntity {
         this.picture = picture;
         this.nickname = nickname;
         this.investmentGoal = investmentGoal;
+        this.mileage = 0;
         this.socialType = socialType;
     }
 

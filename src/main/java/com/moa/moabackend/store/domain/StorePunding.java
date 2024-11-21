@@ -1,5 +1,6 @@
 package com.moa.moabackend.store.domain;
 
+import com.moa.moabackend.global.entity.BaseEntity;
 import com.moa.moabackend.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StorePunding {
+public class StorePunding extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
