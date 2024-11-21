@@ -15,6 +15,7 @@ public record StoreResDto(
                 Long fundingCurrent,
                 List<String> images,
                 String content,
+                String address,
                 Double x,
                 Double y,
                 List<CertifiedType> certifiedType,

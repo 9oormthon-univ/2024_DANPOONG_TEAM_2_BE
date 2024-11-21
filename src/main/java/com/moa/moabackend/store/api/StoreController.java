@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.moa.moabackend.global.template.RspTemplate;
+import com.moa.moabackend.member.domain.Member;
 import com.moa.moabackend.store.api.dto.request.SearchByLocationReqDto;
 import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.StoreResDto;
@@ -120,4 +122,51 @@ public class StoreController implements StoreControllerDocs {
         }
         return new RspTemplate<>(HttpStatus.OK, "주소로 상점 찾기", result);
     }
+
+    @GetMapping("/scrap")
+    @Transactional(readOnly = true)
+    public RspTemplate<List<StoreResDto>> getScrapStoreList(@AuthenticationPrincipal Member member) {
+        List<StoreResDto> result = null;
+        try {
+            result = storeService.getScrapStoreList(member.getId());
+        } catch (EntityNotFoundException e) {
+            return new RspTemplate<>(HttpStatus.NOT_FOUND, "찜한 상점이 없거나, 유효한 유저가 아닙니다.", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "찜한 상점 리스트를 가져오는 중 문제가 발생했습니다.", null);
+        }
+
+        return new RspTemplate<>(HttpStatus.OK, "찜한 상점 전체 확인", result);
+    }
+
+    @PostMapping("/scrap/{id}")
+    public RspTemplate<Boolean> scrapStore(@AuthenticationPrincipal Member member,
+            @Parameter(name = "id", description = "상점 ID", in = ParameterIn.PATH) @PathVariable(name = "id") Long storeId) {
+        try {
+            storeService.scrapStore(storeId, member.getId());
+        } catch (EntityNotFoundException e) {
+            return new RspTemplate<>(HttpStatus.NOT_FOUND, "상점을 찾을 수 없거나, 유효한 유저가 아닙니다.", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "상점 찜하기 중 문제가 발생했습니다.", null);
+        }
+
+        return new RspTemplate<>(HttpStatus.OK, "상점 찜하기", true);
+    }
+
+    @DeleteMapping("/scrap/{id}")
+    public RspTemplate<Boolean> unscrapStore(@AuthenticationPrincipal Member member,
+            @Parameter(name = "id", description = "상점 ID", in = ParameterIn.PATH) @PathVariable(name = "id") Long storeId) {
+        try {
+            storeService.unscrapStore(storeId, member.getId());
+        } catch (EntityNotFoundException e) {
+            return new RspTemplate<>(HttpStatus.NOT_FOUND, "찜하지 않은 상태에서 찜하기 취소를 시도했습니다.", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "상점 찜하기 취소 처리 중 문제가 발생했습니다.", null);
+        }
+
+        return new RspTemplate<>(HttpStatus.OK, "상점 찜하기 취소", true);
+    }
+
 }

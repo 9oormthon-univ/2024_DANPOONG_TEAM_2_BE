@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moa.moabackend.member.domain.Member;
+import com.moa.moabackend.member.domain.repository.MemberRepository;
 import com.moa.moabackend.store.api.dto.request.SearchByLocationReqDto;
 import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.AddressResDto;
@@ -22,6 +24,7 @@ import com.moa.moabackend.store.api.dto.response.StoreResDto;
 import com.moa.moabackend.store.domain.Store;
 import com.moa.moabackend.store.domain.StoreImage;
 import com.moa.moabackend.store.domain.StoreLocation;
+import com.moa.moabackend.store.domain.StoreScrap;
 import com.moa.moabackend.store.domain.repository.StoreFundingRepository;
 import com.moa.moabackend.store.domain.repository.StoreImageRepository;
 import com.moa.moabackend.store.domain.repository.StoreLocationRepository;
@@ -40,6 +43,7 @@ public class StoreService {
     private final StoreLocationRepository storeLocationRepository;
     private final StoreFundingRepository storeFundingRepository;
     private final StoreScrapRepository storeScrapRepository;
+    private final MemberRepository memberRepository;
 
     @Value("${KAKAO_API_KEY}")
     private String kakaoApiKey;
@@ -93,6 +97,7 @@ public class StoreService {
                 store.getFundingCurrent(),
                 store.getStoreImages().stream().map(image -> image.getImageUrl()).collect(Collectors.toList()),
                 store.getContent(),
+                store.getStoreLocation().getAddress(),
                 store.getStoreLocation().getX(),
                 store.getStoreLocation().getY(),
                 store.getCertifiedType(),
@@ -209,5 +214,50 @@ public class StoreService {
             throw new RevGeocodeNotFoundException();
         }
         return documents.get(0).road_address().address_name();
+    }
+
+    public void scrapStore(Long storeId, Long userId) {
+        // 1. 받은 storeId로 상점 존재 검사 및 객체 확보
+        System.out.println(storeId);
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new EntityNotFoundException("ID가 일치하는 상점을 찾을 수 없습니다."));
+
+        // 2. 받은 userId로 회원 존재 검사 및 객체 확보
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("유효하지 않은 회원입니다."));
+
+        // 3. 해당 유저의 상점 스크랩 정보 저장
+        StoreScrap storeScrap = StoreScrap.builder().member(member).store(store).build();
+        storeScrapRepository.save(storeScrap);
+    }
+
+    public void unscrapStore(Long storeId, Long userId) {
+        // 1. 받은 storeId로 상점 존재 검사 및 객체 확보
+        StoreScrap storeScrap = storeScrapRepository.findByMember_idAndStore_id(userId, storeId)
+                .orElseThrow(() -> new EntityNotFoundException("찜하지 않은 상태에서 찜하기 취소를 시도했습니다."));
+
+        // 2. 해당 스크랩 정보 삭제
+        storeScrapRepository.delete(storeScrap);
+    }
+
+    public List<StoreResDto> getScrapStoreList(Long userId) {
+        // 1. 받은 userId로 회원 존재 검사
+        memberRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("유효하지 않은 회원입니다."));
+
+        // 2. userId로 되어있는 모든 StoreScrap를 조회
+        List<StoreScrap> storeScraps = storeScrapRepository.findByMember_id(userId);
+        if (storeScraps.isEmpty()) {
+            throw new EntityNotFoundException("찜한 상점이 없습니다.");
+        }
+
+        // 3. storeScraps를 StoreResDto로 매핑
+        List<StoreResDto> result = new ArrayList<StoreResDto>();
+        for (StoreScrap scrap : storeScraps) {
+            Long storeId = scrap.getStore().getId();
+            result.add(makeStoreDto(storeId, scrap.getStore()));
+        }
+
+        return result;
     }
 }
