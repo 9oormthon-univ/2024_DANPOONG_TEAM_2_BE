@@ -42,4 +42,8 @@ public class Mileage extends BaseEntity {
         this.store = store;
     }
 
+    public void updateAmount(int amount) {
+        this.amount = amount;
+    }
+
 }
