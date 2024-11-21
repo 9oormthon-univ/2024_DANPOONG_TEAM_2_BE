@@ -35,5 +35,5 @@ public class StoreImage extends BaseEntity {
         this.imageUrl = imageUrl;
         this.store = store;
     }
-    
+
 }

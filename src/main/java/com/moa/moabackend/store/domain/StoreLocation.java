@@ -25,16 +25,16 @@ public class StoreLocation {
 
     private String address;
 
-    private String x;
+    private Double x;
 
-    private String y;
+    private Double y;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
     private Store store;
 
     @Builder
-    private StoreLocation(String address, String x, String y, Store store) {
+    private StoreLocation(String address, Double x, Double y, Store store) {
         this.address = address;
         this.x = x;
         this.y = y;
