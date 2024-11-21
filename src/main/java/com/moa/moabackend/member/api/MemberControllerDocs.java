@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface MemberControllerDocs {
 
-    @Operation(summary = "내 정보 조회 API", description = "내 정보를 조회하는 API 입니다.")
+    @Operation(summary = "내 정보 조회 API, 포트폴리오 뷰에서 사용", description = "내 정보를 조회하는 API 입니다. 포트폴리오 뷰에서 사용하시면 됩니다. // 반환: 사용자 정보 + 마일리지")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "내 정보 조회 성공")
     })
