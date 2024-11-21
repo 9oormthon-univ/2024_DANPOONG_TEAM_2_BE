@@ -1,7 +1,6 @@
 package com.moa.moabackend.store.api;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.moa.moabackend.global.template.RspTemplate;
-import com.moa.moabackend.store.api.dto.request.SearchByLocationReqDto;
 import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.StoreResDto;
 import com.moa.moabackend.store.application.StoreService;
