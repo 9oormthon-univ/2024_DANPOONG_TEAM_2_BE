@@ -50,7 +50,8 @@ public class StoreService {
         // 1-1. 상점 객체 빌드
         Store newStore = Store.builder().name(payload.name()).category(payload.category())
                 .profileImage(payload.profileImage()).caption(payload.caption()).fundingCurrent(0)
-                .fundingTarget(payload.fundingTarget()).content(payload.content()).build();
+                .fundingTarget(payload.fundingTarget()).content(payload.content()).startAt(payload.startAt())
+                .endAt(payload.endAt()).certifiedType(payload.certifiedType()).build();
 
         // 1-2. 상점 등록
         Store store = storeRepository.save(newStore);
@@ -89,12 +90,11 @@ public class StoreService {
                 .orElseThrow(() -> new EntityNotFoundException("ID가 일치하는 상점을 찾을 수 없습니다."));
 
         // 2-1. 받은 상점 정보로 기존 상점 정보 업데이트
-        storeRepository.updateStoreInfo(storeId, payload.name() != null ? payload.name() : store.getName(),
-                payload.category() != null ? payload.category() : store.getCategory(),
-                payload.profileImage() != null ? payload.profileImage() : store.getProfileImage(),
-                payload.caption() != null ? payload.caption() : store.getCaption(),
-                payload.content() != null ? payload.content() : store.getContent(),
-                payload.fundingTarget() != null ? payload.fundingTarget() : store.getFundingTarget());
+        Store patch = Store.builder().id(storeId).name(payload.name()).category(payload.category())
+                .profileImage(payload.profileImage()).certifiedType(payload.certifiedType()).caption(payload.caption())
+                .content(payload.content()).fundingTarget(payload.fundingTarget())
+                .fundingTarget(payload.fundingTarget()).endAt(payload.endAt()).build();
+        store.updateTo(patch);
 
         if (payload.images() != null) {
             // 3-1. 기존 상점 이미지 정보 제거

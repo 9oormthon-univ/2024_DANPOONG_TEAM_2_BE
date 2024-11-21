@@ -1,7 +1,6 @@
 package com.moa.moabackend.store.api;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.moa.moabackend.global.template.RspTemplate;
-import com.moa.moabackend.store.api.dto.request.SearchByLocationReqDto;
 import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.StoreResDto;
 import com.moa.moabackend.store.application.StoreService;
@@ -36,16 +34,18 @@ public class StoreController implements StoreControllerDocs {
     private final StoreService storeService;
 
     @PostMapping("")
-    public RspTemplate<Boolean> createStore(@RequestBody StoreReqDto storeReqDto) {
+    public RspTemplate<Long> createStore(@RequestBody StoreReqDto storeReqDto) {
+        Long result = null;
         try {
-            storeService.createStore(storeReqDto);
+            Store store = storeService.createStore(storeReqDto);
+            result = store.getId();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
             return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "좌표를 주소로 변환하는데 실패했습니다.", null);
         } catch (RevGeocodeNotFoundException e) {
             return new RspTemplate<>(HttpStatus.BAD_REQUEST, "해당하는 좌표로 가게를 찾지 못했습니다.", null);
         }
-        return new RspTemplate<>(HttpStatus.OK, "상점 생성", true);
+        return new RspTemplate<>(HttpStatus.OK, "상점 생성", result);
     }
 
     @GetMapping("/{id}")
@@ -64,7 +64,10 @@ public class StoreController implements StoreControllerDocs {
                 store.getStoreImages().stream().map(image -> image.getImageUrl()).collect(Collectors.toList()),
                 store.getContent(),
                 store.getStoreLocation().getX(),
-                store.getStoreLocation().getY());
+                store.getStoreLocation().getY(),
+                store.getCertifiedType(),
+                store.getStartAt(),
+                store.getEndAt());
 
         return new RspTemplate<>(HttpStatus.OK, "상점 조회", storeResDto);
     }
