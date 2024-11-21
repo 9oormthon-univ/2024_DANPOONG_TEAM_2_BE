@@ -1,5 +1,6 @@
-package com.moa.moabackend.member.domain;
+package com.moa.moabackend.voucher.domain;
 
+import com.moa.moabackend.member.domain.Member;
 import com.moa.moabackend.store.domain.Store;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,9 +21,9 @@ import lombok.NoArgsConstructor;
 public class VoucherBarcode {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "voucher_barcode_id")
-    private Long id;
+    private String id;
 
     private int amount;
 

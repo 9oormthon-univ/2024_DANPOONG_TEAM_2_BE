@@ -2,7 +2,8 @@ package com.moa.moabackend.store.domain;
 
 import com.moa.moabackend.global.entity.BaseEntity;
 import com.moa.moabackend.member.domain.Mileage;
-import com.moa.moabackend.member.domain.VoucherBarcode;
+import com.moa.moabackend.voucher.domain.VoucherBarcode;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

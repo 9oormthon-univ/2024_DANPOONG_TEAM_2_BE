@@ -3,6 +3,8 @@ package com.moa.moabackend.member.domain;
 import com.moa.moabackend.global.entity.BaseEntity;
 import com.moa.moabackend.store.domain.StorePunding;
 import com.moa.moabackend.store.domain.StoreScrap;
+import com.moa.moabackend.voucher.domain.VoucherBarcode;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -63,7 +65,7 @@ public class Member extends BaseEntity {
 
     @Builder
     private Member(Role role, String email, String picture, String nickname, String investmentGoal,
-                   SocialType socialType) {
+            SocialType socialType) {
         this.role = role;
         this.email = email;
         this.picture = picture;
