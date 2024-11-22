@@ -26,4 +26,7 @@ public interface StoreLocationRepository extends JpaRepository<StoreLocation, Lo
         @Modifying
         @Query("DELETE FROM StoreLocation sl WHERE sl.store.id = :storeId")
         void deleteByStoreId(@Param("storeId") Long storeId);
+
+        @Query("SELECT sl FROM StoreLocation sl WHERE sl.address LIKE %:address%")
+        Optional<List<StoreLocation>> findByAddressContaining(@Param("address") String address);
 }

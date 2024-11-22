@@ -7,6 +7,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,33 +15,38 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moa.moabackend.member.domain.Member;
+import com.moa.moabackend.member.domain.repository.MemberRepository;
+import com.moa.moabackend.store.api.dto.request.SearchByLocationReqDto;
 import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.AddressResDto;
+import com.moa.moabackend.store.api.dto.response.StoreResDto;
 import com.moa.moabackend.store.domain.Store;
 import com.moa.moabackend.store.domain.StoreImage;
 import com.moa.moabackend.store.domain.StoreLocation;
+import com.moa.moabackend.store.domain.StoreScrap;
+import com.moa.moabackend.store.domain.repository.StoreFundingRepository;
 import com.moa.moabackend.store.domain.repository.StoreImageRepository;
 import com.moa.moabackend.store.domain.repository.StoreLocationRepository;
 import com.moa.moabackend.store.domain.repository.StoreRepository;
+import com.moa.moabackend.store.domain.repository.StoreScrapRepository;
 import com.moa.moabackend.store.exception.RevGeocodeNotFoundException;
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class StoreService {
     private final StoreRepository storeRepository;
     private final StoreImageRepository storeImageRepository;
     private final StoreLocationRepository storeLocationRepository;
+    private final StoreFundingRepository storeFundingRepository;
+    private final StoreScrapRepository storeScrapRepository;
+    private final MemberRepository memberRepository;
 
     @Value("${KAKAO_API_KEY}")
     private String kakaoApiKey;
-
-    public StoreService(StoreRepository storeRepository, StoreImageRepository storeImageRepository,
-            StoreLocationRepository storeLocationRepository) {
-        this.storeRepository = storeRepository;
-        this.storeImageRepository = storeImageRepository;
-        this.storeLocationRepository = storeLocationRepository;
-    }
 
     @Transactional
     public Store createStore(StoreReqDto payload) throws JsonProcessingException, IOException, InterruptedException {
@@ -50,7 +56,8 @@ public class StoreService {
         // 1-1. 상점 객체 빌드
         Store newStore = Store.builder().name(payload.name()).category(payload.category())
                 .profileImage(payload.profileImage()).caption(payload.caption()).fundingCurrent(0)
-                .fundingTarget(payload.fundingTarget()).content(payload.content()).build();
+                .fundingTarget(payload.fundingTarget()).content(payload.content()).startAt(payload.startAt())
+                .endAt(payload.endAt()).certifiedType(payload.certifiedType()).build();
 
         // 1-2. 상점 등록
         Store store = storeRepository.save(newStore);
@@ -71,12 +78,35 @@ public class StoreService {
         return store;
     }
 
-    public Store getStore(Long storeId) {
+    public StoreResDto getStore(Long storeId) {
         // ID로 상점 찾기
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new EntityNotFoundException("ID가 일치하는 상점을 찾을 수 없습니다."));
 
-        return store;
+        return makeStoreDto(storeId, store);
+    }
+
+    public StoreResDto makeStoreDto(Long storeId, Store store) {
+        StoreResDto result = new StoreResDto(
+                storeId,
+                store.getName(),
+                store.getCategory(),
+                store.getProfileImage(),
+                store.getCaption(),
+                store.getFundingTarget(),
+                store.getFundingCurrent(),
+                store.getStoreImages().stream().map(image -> image.getImageUrl()).collect(Collectors.toList()),
+                store.getContent(),
+                store.getStoreLocation().getAddress(),
+                store.getStoreLocation().getX(),
+                store.getStoreLocation().getY(),
+                store.getCertifiedType(),
+                store.getStartAt(),
+                store.getEndAt(),
+                storeFundingRepository.countByStore_id(storeId),
+                storeScrapRepository.countByStore_id(storeId));
+
+        return result;
     }
 
     @Transactional
@@ -89,12 +119,11 @@ public class StoreService {
                 .orElseThrow(() -> new EntityNotFoundException("ID가 일치하는 상점을 찾을 수 없습니다."));
 
         // 2-1. 받은 상점 정보로 기존 상점 정보 업데이트
-        storeRepository.updateStoreInfo(storeId, payload.name() != null ? payload.name() : store.getName(),
-                payload.category() != null ? payload.category() : store.getCategory(),
-                payload.profileImage() != null ? payload.profileImage() : store.getProfileImage(),
-                payload.caption() != null ? payload.caption() : store.getCaption(),
-                payload.content() != null ? payload.content() : store.getContent(),
-                payload.fundingTarget() != null ? payload.fundingTarget() : store.getFundingTarget());
+        Store patch = Store.builder().id(storeId).name(payload.name()).category(payload.category())
+                .profileImage(payload.profileImage()).certifiedType(payload.certifiedType()).caption(payload.caption())
+                .content(payload.content()).fundingTarget(payload.fundingTarget())
+                .endAt(payload.endAt()).build();
+        store.updateTo(patch);
 
         if (payload.images() != null) {
             // 3-1. 기존 상점 이미지 정보 제거
@@ -122,7 +151,8 @@ public class StoreService {
     }
 
     public void deleteStore(Long storeId) {
-        Store store = getStore(storeId);
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new EntityNotFoundException("ID가 일치하는 상점을 찾을 수 없습니다."));
         storeRepository.delete(store);
     }
 
@@ -142,6 +172,17 @@ public class StoreService {
         }
 
         // 3. 좌표 주변에 있는 상점들의 상점 정보 반환
+        return result;
+    }
+
+    public List<StoreResDto> searchStoreByAddress(SearchByLocationReqDto payload) {
+        List<StoreLocation> storeLocation = storeLocationRepository.findByAddressContaining(payload.address())
+                .orElseThrow(() -> new EntityNotFoundException("주소가 일치하는 상점을 찾을 수 없습니다."));
+
+        List<StoreResDto> result = new ArrayList<StoreResDto>();
+        for (StoreLocation loc : storeLocation) {
+            result.add(makeStoreDto(loc.getStore().getId(), loc.getStore()));
+        }
         return result;
     }
 
@@ -173,5 +214,50 @@ public class StoreService {
             throw new RevGeocodeNotFoundException();
         }
         return documents.get(0).road_address().address_name();
+    }
+
+    public void scrapStore(Long storeId, Long userId) {
+        // 1. 받은 storeId로 상점 존재 검사 및 객체 확보
+        System.out.println(storeId);
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new EntityNotFoundException("ID가 일치하는 상점을 찾을 수 없습니다."));
+
+        // 2. 받은 userId로 회원 존재 검사 및 객체 확보
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("유효하지 않은 회원입니다."));
+
+        // 3. 해당 유저의 상점 스크랩 정보 저장
+        StoreScrap storeScrap = StoreScrap.builder().member(member).store(store).build();
+        storeScrapRepository.save(storeScrap);
+    }
+
+    public void unscrapStore(Long storeId, Long userId) {
+        // 1. 받은 storeId로 상점 존재 검사 및 객체 확보
+        StoreScrap storeScrap = storeScrapRepository.findByMember_idAndStore_id(userId, storeId)
+                .orElseThrow(() -> new EntityNotFoundException("찜하지 않은 상태에서 찜하기 취소를 시도했습니다."));
+
+        // 2. 해당 스크랩 정보 삭제
+        storeScrapRepository.delete(storeScrap);
+    }
+
+    public List<StoreResDto> getScrapStoreList(Long userId) {
+        // 1. 받은 userId로 회원 존재 검사
+        memberRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("유효하지 않은 회원입니다."));
+
+        // 2. userId로 되어있는 모든 StoreScrap를 조회
+        List<StoreScrap> storeScraps = storeScrapRepository.findByMember_id(userId);
+        if (storeScraps.isEmpty()) {
+            throw new EntityNotFoundException("찜한 상점이 없습니다.");
+        }
+
+        // 3. storeScraps를 StoreResDto로 매핑
+        List<StoreResDto> result = new ArrayList<StoreResDto>();
+        for (StoreScrap scrap : storeScraps) {
+            Long storeId = scrap.getStore().getId();
+            result.add(makeStoreDto(storeId, scrap.getStore()));
+        }
+
+        return result;
     }
 }

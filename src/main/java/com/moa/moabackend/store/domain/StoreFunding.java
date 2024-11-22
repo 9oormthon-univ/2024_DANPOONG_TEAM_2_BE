@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StorePunding extends BaseEntity {
+public class StoreFunding extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,7 @@ public class StorePunding extends BaseEntity {
     private Store store;
 
     @Builder
-    private StorePunding(int amount, Member member, Store store) {
+    private StoreFunding(int amount, Member member, Store store) {
         this.amount = amount;
         this.member = member;
         this.store = store;
