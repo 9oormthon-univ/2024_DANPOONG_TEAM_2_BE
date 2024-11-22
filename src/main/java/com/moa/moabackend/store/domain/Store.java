@@ -14,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.transaction.Transactional;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,9 +75,9 @@ public class Store extends BaseEntity {
 
     @Builder
     private Store(Long id, String name, String category, String profileImage, List<CertifiedType> certifiedType,
-            String caption, String content,
-            long fundingCurrent,
-            long fundingTarget, StoreLocation storeLocation, LocalDate startAt, LocalDate endAt) {
+                  String caption, String content,
+                  long fundingCurrent,
+                  long fundingTarget, StoreLocation storeLocation, LocalDate startAt, LocalDate endAt) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -106,6 +105,10 @@ public class Store extends BaseEntity {
         this.storeLocation = store.storeLocation != null ? store.storeLocation : this.storeLocation;
         this.startAt = store.startAt != null ? store.startAt : this.startAt;
         this.endAt = store.endAt != null ? store.endAt : this.endAt;
+    }
+
+    public void addFundingCurrent(long amount) {
+        this.fundingCurrent += amount;
     }
 
 }
