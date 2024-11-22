@@ -55,13 +55,12 @@ public class MemberService {
         List<Coupon> coupons = couponRepository.findByMember(member);
 
         List<CouponInfoResDto> couponInfoResDtos = coupons.stream()
-                .map(coupon ->
-                        CouponInfoResDto.of(
-                                coupon.getId(),
-                                coupon.getAmount(),
-                                coupon.getDescription(),
-                                coupon.getExpirationDate(),
-                                String.valueOf(coupon.getCouponStatus())))
+                .map(coupon -> CouponInfoResDto.of(
+                        coupon.getId(),
+                        coupon.getAmount(),
+                        coupon.getDescription(),
+                        coupon.getExpirationDate(),
+                        String.valueOf(coupon.getCouponStatus())))
                 .toList();
 
         return MemberCouponsResDto.from(couponInfoResDtos);
@@ -76,8 +75,7 @@ public class MemberService {
                         storePunding.getStore().getId(),
                         storePunding.getCreatedAt(),
                         storePunding.getStore().getName(),
-                        storePunding.getAmount()
-                ))
+                        storePunding.getAmount()))
                 .toList();
 
         return MyPundingHistoryResDto.of(member.getMileage(), historyInfoResDtos);

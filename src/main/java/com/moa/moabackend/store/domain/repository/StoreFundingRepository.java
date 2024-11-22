@@ -13,4 +13,5 @@ public interface StoreFundingRepository extends JpaRepository<StoreFunding, Long
 
     Optional<StoreFunding> findByMemberAndStore(Member member, Store store);
 
+    Long countByStore_id(Long store_id);
 }

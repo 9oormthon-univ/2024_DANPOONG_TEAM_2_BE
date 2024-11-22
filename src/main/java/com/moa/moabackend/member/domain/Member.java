@@ -66,7 +66,7 @@ public class Member extends BaseEntity {
 
     @Builder
     private Member(Role role, String email, String picture, String nickname, String investmentGoal,
-                   SocialType socialType) {
+            SocialType socialType) {
         this.role = role;
         this.email = email;
         this.picture = picture;

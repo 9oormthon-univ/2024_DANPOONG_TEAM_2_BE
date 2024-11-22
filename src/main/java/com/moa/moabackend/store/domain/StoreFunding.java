@@ -32,7 +32,7 @@ public class StoreFunding extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Status status;
-
+  
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
