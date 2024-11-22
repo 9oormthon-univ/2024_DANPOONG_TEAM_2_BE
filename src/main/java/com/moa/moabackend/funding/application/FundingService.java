@@ -2,6 +2,8 @@ package com.moa.moabackend.funding.application;
 
 import com.moa.moabackend.funding.api.request.FundWithAmountReqDto;
 import com.moa.moabackend.funding.api.request.FundWithCouponReqDto;
+import com.moa.moabackend.funding.api.response.MyFundingsResDto;
+import com.moa.moabackend.funding.api.response.MyFundingsResDto.MyFundingInfoResDto;
 import com.moa.moabackend.member.domain.Coupon;
 import com.moa.moabackend.member.domain.Member;
 import com.moa.moabackend.member.domain.repository.CouponRepository;
@@ -13,6 +15,7 @@ import com.moa.moabackend.store.domain.StoreFunding;
 import com.moa.moabackend.store.domain.repository.StoreFundingRepository;
 import com.moa.moabackend.store.domain.repository.StoreRepository;
 import com.moa.moabackend.store.exception.StoreNotFoundException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,6 +81,30 @@ public class FundingService {
         coupon.updateCouponStatus();
         store.addFundingCurrent(coupon.getAmount());
         storeFundingRepository.save(storeFunding);
+    }
+
+    // 내 펀딩 목록 조회
+    public MyFundingsResDto getMyFundings(String email) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+        List<StoreFunding> storeFundings = storeFundingRepository.findByMember(member);
+
+        List<MyFundingInfoResDto> myFundingInfoResDtos = storeFundings.stream()
+                .map(storeFunding -> {
+                            long fundingTarget = storeFunding.getStore().getFundingTarget();
+                            long fundingCurrent = storeFunding.getStore().getFundingCurrent();
+
+                            return MyFundingInfoResDto.of(
+                                    storeFunding.getStore().getId(),
+                                    storeFunding.getStore().getName(),
+                                    storeFunding.getStore().getProfileImage(),
+                                    fundingTarget > fundingCurrent,
+                                    storeFunding.getAmount());
+                        }
+
+                )
+                .toList();
+
+        return MyFundingsResDto.from(myFundingInfoResDtos);
     }
 
 }
