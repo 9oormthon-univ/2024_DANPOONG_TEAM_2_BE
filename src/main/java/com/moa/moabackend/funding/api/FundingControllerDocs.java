@@ -2,6 +2,7 @@ package com.moa.moabackend.funding.api;
 
 import com.moa.moabackend.funding.api.request.FundWithAmountReqDto;
 import com.moa.moabackend.funding.api.request.FundWithCouponReqDto;
+import com.moa.moabackend.funding.api.response.MyFundingsResDto;
 import com.moa.moabackend.global.template.RspTemplate;
 import com.moa.moabackend.member.domain.Member;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,5 +26,11 @@ public interface FundingControllerDocs {
     })
     RspTemplate<Void> fundWithCoupon(@AuthenticationPrincipal Member member,
                                      @RequestBody FundWithCouponReqDto fundWithCouponReqDto);
+
+    @Operation(summary = "내 펀딩 정보 조회 API", description = "내가 펀딩한 정보를 조회하는 API 입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "내 펀딩 조회 성공")
+    })
+    RspTemplate<MyFundingsResDto> getMyFundings(@AuthenticationPrincipal Member member);
 
 }

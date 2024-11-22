@@ -2,12 +2,14 @@ package com.moa.moabackend.funding.api;
 
 import com.moa.moabackend.funding.api.request.FundWithAmountReqDto;
 import com.moa.moabackend.funding.api.request.FundWithCouponReqDto;
+import com.moa.moabackend.funding.api.response.MyFundingsResDto;
 import com.moa.moabackend.funding.application.FundingService;
 import com.moa.moabackend.global.template.RspTemplate;
 import com.moa.moabackend.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +34,11 @@ public class FundingController implements FundingControllerDocs {
                                             @RequestBody FundWithCouponReqDto fundWithCouponReqDto) {
         fundingService.fundWithCoupon(member.getEmail(), fundWithCouponReqDto);
         return new RspTemplate<>(HttpStatus.OK, "쿠폰으로 펀딩");
+    }
+
+    @GetMapping("/my")
+    public RspTemplate<MyFundingsResDto> getMyFundings(@AuthenticationPrincipal Member member) {
+        return new RspTemplate<>(HttpStatus.OK, "내 펀딩 정보 조회", fundingService.getMyFundings(member.getEmail()));
     }
 
 }
