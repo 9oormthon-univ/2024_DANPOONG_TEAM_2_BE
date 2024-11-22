@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.webjars.NotFoundException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +22,7 @@ import com.moa.moabackend.store.api.dto.request.SearchByLocationReqDto;
 import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.AddressResDto;
 import com.moa.moabackend.store.api.dto.response.StoreResDto;
+import com.moa.moabackend.store.domain.CertifiedType;
 import com.moa.moabackend.store.domain.Store;
 import com.moa.moabackend.store.domain.StoreImage;
 import com.moa.moabackend.store.domain.StoreLocation;
@@ -260,4 +262,17 @@ public class StoreService {
 
         return result;
     }
+
+    // public List<StoreResDto> getOneCertified(CertifiedType certifiedType) {
+    // List<Store> stores =
+    // storeRepository.findByCertifiedTypeOrderByScrapCountDesc(certifiedType)
+    // .orElseThrow(() -> new NotFoundException(""));
+
+    // List<StoreResDto> result = new ArrayList<StoreResDto>();
+    // for (Store s : stores) {
+    // result.add(makeStoreDto(s.getId(), s));
+    // }
+
+    // return result;
+    // }
 }
