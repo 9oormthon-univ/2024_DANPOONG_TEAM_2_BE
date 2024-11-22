@@ -1,7 +1,7 @@
-package com.moa.moabackend.store.domain;
+package com.moa.moabackend.voucher.domain;
 
-import com.moa.moabackend.global.entity.BaseEntity;
 import com.moa.moabackend.member.domain.Member;
+import com.moa.moabackend.store.domain.Store;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -18,11 +18,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class StorePunding extends BaseEntity {
+public class Voucher {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "store_punding_id")
+    @Column(name = "voucher_id")
     private Long id;
 
     private int amount;
@@ -36,7 +36,7 @@ public class StorePunding extends BaseEntity {
     private Store store;
 
     @Builder
-    private StorePunding(int amount, Member member, Store store) {
+    private Voucher(int amount, Member member, Store store) {
         this.amount = amount;
         this.member = member;
         this.store = store;

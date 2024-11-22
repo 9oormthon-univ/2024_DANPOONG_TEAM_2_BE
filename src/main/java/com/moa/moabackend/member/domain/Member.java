@@ -1,8 +1,9 @@
 package com.moa.moabackend.member.domain;
 
 import com.moa.moabackend.global.entity.BaseEntity;
-import com.moa.moabackend.store.domain.StorePunding;
+import com.moa.moabackend.store.domain.StoreFunding;
 import com.moa.moabackend.store.domain.StoreScrap;
+import com.moa.moabackend.voucher.domain.Voucher;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,7 +50,7 @@ public class Member extends BaseEntity {
     private MemberType memberType;
 
     @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<StorePunding> storePundings = new ArrayList<>();
+    private List<StoreFunding> storeFundings = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<StoreScrap> storeScraps = new ArrayList<>();
@@ -58,7 +59,7 @@ public class Member extends BaseEntity {
     private List<Mileage> mileages = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<VoucherBarcode> voucherBarcodes = new ArrayList<>();
+    private List<Voucher> vouchers = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Coupon> coupons = new ArrayList<>();
@@ -81,6 +82,14 @@ public class Member extends BaseEntity {
 
     public void updateInvestmentGoal(String investmentGoal) {
         this.investmentGoal = investmentGoal;
+    }
+
+    public void addMileage(int mileage) {
+        this.mileage += mileage;
+    }
+
+    public void minusMileage(int mileage) {
+        this.mileage -= mileage;
     }
 
 }

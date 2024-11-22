@@ -2,7 +2,7 @@ package com.moa.moabackend.store.domain;
 
 import com.moa.moabackend.global.entity.BaseEntity;
 import com.moa.moabackend.member.domain.Mileage;
-import com.moa.moabackend.member.domain.VoucherBarcode;
+import com.moa.moabackend.voucher.domain.Voucher;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,7 +49,7 @@ public class Store extends BaseEntity {
     private List<StoreImage> storeImages = new ArrayList<>();
 
     @OneToMany(mappedBy = "store", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<StorePunding> storePundings = new ArrayList<>();
+    private List<StoreFunding> storeFundings = new ArrayList<>();
 
     @OneToMany(mappedBy = "store", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<StoreScrap> storeScraps = new ArrayList<>();
@@ -58,12 +58,12 @@ public class Store extends BaseEntity {
     private List<Mileage> mileages = new ArrayList<>();
 
     @OneToMany(mappedBy = "store", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<VoucherBarcode> voucherBarcodes = new ArrayList<>();
+    private List<Voucher> vouchers = new ArrayList<>();
 
     @Builder
     private Store(Long id, String name, String category, String profileImage, String caption, String content,
-            long fundingCurrent,
-            long fundingTarget, StoreLocation storeLocation) {
+                  long fundingCurrent,
+                  long fundingTarget, StoreLocation storeLocation) {
         this.id = id;
         this.name = name;
         this.category = category;
