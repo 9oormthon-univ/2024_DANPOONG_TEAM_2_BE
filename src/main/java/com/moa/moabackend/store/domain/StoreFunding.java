@@ -1,9 +1,12 @@
 package com.moa.moabackend.store.domain;
 
 import com.moa.moabackend.global.entity.BaseEntity;
+import com.moa.moabackend.global.entity.Status;
 import com.moa.moabackend.member.domain.Member;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -27,6 +30,9 @@ public class StoreFunding extends BaseEntity {
 
     private int amount;
 
+    @Enumerated(EnumType.STRING)
+    private Status status;
+  
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -38,8 +44,13 @@ public class StoreFunding extends BaseEntity {
     @Builder
     private StoreFunding(int amount, Member member, Store store) {
         this.amount = amount;
+        this.status = Status.ACTIVE;
         this.member = member;
         this.store = store;
+    }
+
+    public void updateStatus() {
+        this.status = this.status == Status.ACTIVE ? Status.UN_ACTIVE : Status.ACTIVE;
     }
 
 }

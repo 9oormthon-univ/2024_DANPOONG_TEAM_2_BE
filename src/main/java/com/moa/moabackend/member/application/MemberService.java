@@ -25,7 +25,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final CouponRepository couponRepository;
-    private final StoreFundingRepository storePundingRepository;
+    private final StoreFundingRepository storeFundingRepository;
 
     public MemberInfoResDto getUserInfo(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
@@ -68,9 +68,9 @@ public class MemberService {
 
     public MyPundingHistoryResDto getMyPundingHistory(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
-        List<StoreFunding> storePundings = storePundingRepository.findByMember(member);
+        List<StoreFunding> storeFundings = storeFundingRepository.findByMember(member);
 
-        List<HistoryInfoResDto> historyInfoResDtos = storePundings.stream()
+        List<HistoryInfoResDto> historyInfoResDtos = storeFundings.stream()
                 .map(storePunding -> HistoryInfoResDto.of(
                         storePunding.getStore().getId(),
                         storePunding.getCreatedAt(),

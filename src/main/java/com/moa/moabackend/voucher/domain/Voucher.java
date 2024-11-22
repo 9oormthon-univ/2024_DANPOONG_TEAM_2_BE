@@ -1,5 +1,6 @@
-package com.moa.moabackend.member.domain;
+package com.moa.moabackend.voucher.domain;
 
+import com.moa.moabackend.member.domain.Member;
 import com.moa.moabackend.store.domain.Store;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,11 +18,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class VoucherBarcode {
+public class Voucher {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "voucher_barcode_id")
+    @Column(name = "voucher_id")
     private Long id;
 
     private int amount;
@@ -35,7 +36,7 @@ public class VoucherBarcode {
     private Store store;
 
     @Builder
-    private VoucherBarcode(int amount, Member member, Store store) {
+    private Voucher(int amount, Member member, Store store) {
         this.amount = amount;
         this.member = member;
         this.store = store;
