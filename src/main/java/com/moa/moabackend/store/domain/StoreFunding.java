@@ -32,7 +32,7 @@ public class StoreFunding extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Status status;
-  
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -51,6 +51,10 @@ public class StoreFunding extends BaseEntity {
 
     public void updateStatus() {
         this.status = this.status == Status.ACTIVE ? Status.UN_ACTIVE : Status.ACTIVE;
+    }
+
+    public void addAmount(int amount) {
+        this.amount += amount;
     }
 
 }

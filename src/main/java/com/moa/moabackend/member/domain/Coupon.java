@@ -48,4 +48,12 @@ public class Coupon extends BaseEntity {
         this.member = member;
     }
 
+    public void updateCouponStatus() {
+        this.couponStatus = this.couponStatus == CouponStatus.USED ? CouponStatus.UNUSED : CouponStatus.USED;
+    }
+
+    public boolean isAvailable() {
+        return this.couponStatus == CouponStatus.UNUSED;
+    }
+
 }
