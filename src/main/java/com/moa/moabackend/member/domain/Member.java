@@ -1,17 +1,22 @@
 package com.moa.moabackend.member.domain;
 
 import com.moa.moabackend.global.entity.BaseEntity;
+import com.moa.moabackend.store.domain.CertifiedType;
 import com.moa.moabackend.store.domain.StoreFunding;
 import com.moa.moabackend.store.domain.StoreScrap;
 import com.moa.moabackend.voucher.domain.Voucher;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +37,12 @@ public class Member extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_certified_types", joinColumns = @JoinColumn(name = "member_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "certified_type")
+    private List<CertifiedType> certifiedType;
 
     private String email;
 
@@ -82,6 +93,10 @@ public class Member extends BaseEntity {
 
     public void updateInvestmentGoal(String investmentGoal) {
         this.investmentGoal = investmentGoal;
+    }
+
+    public void updateCertifiedTypes(List<CertifiedType> certifiedType) {
+        this.certifiedType = certifiedType;
     }
 
     public void addMileage(int mileage) {
