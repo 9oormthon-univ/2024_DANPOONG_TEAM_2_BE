@@ -4,13 +4,17 @@ import com.moa.moabackend.global.entity.BaseEntity;
 import com.moa.moabackend.member.domain.Mileage;
 import com.moa.moabackend.voucher.domain.Voucher;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.transaction.Transactional;
@@ -36,7 +40,10 @@ public class Store extends BaseEntity {
 
     private String category;
 
-    @Enumerated(value = EnumType.STRING)
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "store_certified_types", joinColumns = @JoinColumn(name = "store_id"))
+    @Enumerated(EnumType.STRING)
+    @Column(name = "certified_type")
     private List<CertifiedType> certifiedType;
 
     private String profileImage;
@@ -75,9 +82,9 @@ public class Store extends BaseEntity {
 
     @Builder
     private Store(Long id, String name, String category, String profileImage, List<CertifiedType> certifiedType,
-                  String caption, String content,
-                  long fundingCurrent,
-                  long fundingTarget, StoreLocation storeLocation, LocalDate startAt, LocalDate endAt) {
+            String caption, String content,
+            long fundingCurrent,
+            long fundingTarget, StoreLocation storeLocation, LocalDate startAt, LocalDate endAt) {
         this.id = id;
         this.name = name;
         this.category = category;

@@ -7,6 +7,7 @@ import com.moa.moabackend.member.domain.repository.MemberRepository;
 import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.AddressResDto;
 import com.moa.moabackend.store.api.dto.response.StoreResDto;
+import com.moa.moabackend.store.domain.CertifiedType;
 import com.moa.moabackend.store.domain.Store;
 import com.moa.moabackend.store.domain.StoreImage;
 import com.moa.moabackend.store.domain.StoreLocation;
@@ -256,4 +257,17 @@ public class StoreService {
 
         return result;
     }
+
+    // public List<StoreResDto> getOneCertified(CertifiedType certifiedType) {
+    // List<Store> stores =
+    // storeRepository.findByCertifiedTypeOrderByScrapCountDesc(certifiedType)
+    // .orElseThrow(() -> new NotFoundException(""));
+
+    // List<StoreResDto> result = new ArrayList<StoreResDto>();
+    // for (Store s : stores) {
+    // result.add(makeStoreDto(s.getId(), s));
+    // }
+
+    // return result;
+    // }
 }

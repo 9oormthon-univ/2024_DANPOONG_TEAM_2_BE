@@ -165,4 +165,24 @@ public class StoreController implements StoreControllerDocs {
         return new RspTemplate<>(HttpStatus.OK, "상점 찜하기 취소", true);
     }
 
+    // @GetMapping("/store/curation")
+    // public RspTemplate<List<StoreResDto>> getCuration(@RequestBody GetCurationDto
+    // getCurationDto) {
+    // List<StoreResDto> result = new ArrayList<StoreResDto>();
+    // try {
+    // List<StoreResDto> stores =
+    // storeService.getOneCertified(getCurationDto.certifiedType());
+    // result.addAll(stores);
+    // } catch (EntityNotFoundException e) {
+    // return new RspTemplate<>(HttpStatus.NOT_FOUND, "찜하지 않은 상태에서 찜하기 취소를 시도했습니다.",
+    // null);
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "상점 찜하기 취소 처리 중
+    // 문제가 발생했습니다.", null);
+    // }
+
+    // return new RspTemplate<>(HttpStatus.OK, "상점 찜하기 취소", result);
+    // }
+
 }
