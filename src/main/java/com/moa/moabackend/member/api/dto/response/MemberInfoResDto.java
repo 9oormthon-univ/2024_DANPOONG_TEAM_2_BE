@@ -9,10 +9,11 @@ public record MemberInfoResDto(
         String nickname,
         String investmentGoal,
         String memberType,
-        int totalMileageAmount
+        int totalMileageAmount,
+        String favoriteCertifiedType
 ) {
     public static MemberInfoResDto of(String email, String picture, String nickname, String investmentGoal,
-                                      String memberType, int totalMileageAmount) {
+                                      String memberType, int totalMileageAmount, String favoriteCertifiedType) {
         return MemberInfoResDto.builder()
                 .email(email)
                 .picture(picture)
@@ -20,6 +21,7 @@ public record MemberInfoResDto(
                 .investmentGoal(investmentGoal)
                 .memberType(memberType)
                 .totalMileageAmount(totalMileageAmount)
+                .favoriteCertifiedType(favoriteCertifiedType)
                 .build();
     }
 }
