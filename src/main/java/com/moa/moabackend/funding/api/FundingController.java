@@ -3,6 +3,7 @@ package com.moa.moabackend.funding.api;
 import com.moa.moabackend.funding.api.request.FundWithAmountReqDto;
 import com.moa.moabackend.funding.api.request.FundWithCouponReqDto;
 import com.moa.moabackend.funding.api.response.MyFundingsResDto;
+import com.moa.moabackend.funding.api.response.MyFundingsReturnResDto;
 import com.moa.moabackend.funding.application.FundingService;
 import com.moa.moabackend.global.template.RspTemplate;
 import com.moa.moabackend.member.domain.Member;
@@ -41,4 +42,10 @@ public class FundingController implements FundingControllerDocs {
         return new RspTemplate<>(HttpStatus.OK, "내 펀딩 정보 조회", fundingService.getMyFundings(member.getEmail()));
     }
 
+    @GetMapping("/my/return")
+    public RspTemplate<MyFundingsReturnResDto> getMyFundingsReturn(@AuthenticationPrincipal Member member) {
+        return new RspTemplate<>(HttpStatus.OK,
+                "내 펀딩 리턴 확인 정보 조회",
+                fundingService.getMyFundingsReturn(member.getEmail()));
+    }
 }

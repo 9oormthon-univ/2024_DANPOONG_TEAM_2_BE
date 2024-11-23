@@ -15,6 +15,8 @@ import com.moa.moabackend.store.domain.CertifiedType;
 import com.moa.moabackend.store.domain.StoreFunding;
 import com.moa.moabackend.store.domain.repository.StoreFundingRepository;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,12 +33,26 @@ public class MemberService {
     public MemberInfoResDto getUserInfo(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
 
+        List<StoreFunding> storeFundings = storeFundingRepository.findByMember(member);
+
+        Map<CertifiedType, Long> certifiedTypeCount = storeFundings.stream()
+                .flatMap(storeFunding -> storeFunding.getStore().getCertifiedType().stream())
+                .collect(Collectors.groupingBy(certifiedType -> certifiedType, Collectors.counting()));
+
+        CertifiedType mostCertifiedType = certifiedTypeCount.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+
+        String favoriteCertifiedType = mostCertifiedType != null ? mostCertifiedType.toString() : "";
+
         return MemberInfoResDto.of(member.getEmail(),
                 member.getPicture(),
                 member.getNickname(),
                 member.getInvestmentGoal(),
                 String.valueOf(member.getMemberType()),
-                member.getMileage());
+                member.getMileage(),
+                favoriteCertifiedType);
     }
 
     @Transactional
