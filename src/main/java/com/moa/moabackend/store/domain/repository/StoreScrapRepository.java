@@ -13,4 +13,6 @@ public interface StoreScrapRepository extends JpaRepository<StoreScrap, Long> {
     Optional<StoreScrap> findByMember_idAndStore_id(Long member_id, Long store_id);
 
     List<StoreScrap> findByMember_id(Long member_id);
+
+    Boolean existsByMember_idAndStore_id(Long member_id, Long store_id);
 }

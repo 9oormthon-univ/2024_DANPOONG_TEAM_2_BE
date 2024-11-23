@@ -6,6 +6,7 @@ import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.StoreResDto;
 import com.moa.moabackend.store.application.StoreService;
 import com.moa.moabackend.store.domain.Store;
+import com.moa.moabackend.store.exception.AlreadyScrapedException;
 import com.moa.moabackend.store.exception.RevGeocodeNotFoundException;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -137,11 +138,13 @@ public class StoreController implements StoreControllerDocs {
 
     @PostMapping("/scrap/{id}")
     public RspTemplate<Boolean> scrapStore(@AuthenticationPrincipal Member member,
-                                           @Parameter(name = "id", description = "상점 ID", in = ParameterIn.PATH) @PathVariable(name = "id") Long storeId) {
+            @Parameter(name = "id", description = "상점 ID", in = ParameterIn.PATH) @PathVariable(name = "id") Long storeId) {
         try {
             storeService.scrapStore(storeId, member.getId());
         } catch (EntityNotFoundException e) {
             return new RspTemplate<>(HttpStatus.NOT_FOUND, "상점을 찾을 수 없거나, 유효한 유저가 아닙니다.", null);
+        } catch (AlreadyScrapedException e) {
+            return new RspTemplate<>(HttpStatus.BAD_REQUEST, "이미 찜한 상점입니다.", null);
         } catch (Exception e) {
             e.printStackTrace();
             return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "상점 찜하기 중 문제가 발생했습니다.", null);
@@ -152,7 +155,7 @@ public class StoreController implements StoreControllerDocs {
 
     @DeleteMapping("/scrap/{id}")
     public RspTemplate<Boolean> unscrapStore(@AuthenticationPrincipal Member member,
-                                             @Parameter(name = "id", description = "상점 ID", in = ParameterIn.PATH) @PathVariable(name = "id") Long storeId) {
+            @Parameter(name = "id", description = "상점 ID", in = ParameterIn.PATH) @PathVariable(name = "id") Long storeId) {
         try {
             storeService.unscrapStore(storeId, member.getId());
         } catch (EntityNotFoundException e) {
