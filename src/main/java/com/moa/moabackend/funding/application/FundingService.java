@@ -4,6 +4,9 @@ import com.moa.moabackend.funding.api.request.FundWithAmountReqDto;
 import com.moa.moabackend.funding.api.request.FundWithCouponReqDto;
 import com.moa.moabackend.funding.api.response.MyFundingsResDto;
 import com.moa.moabackend.funding.api.response.MyFundingsResDto.MyFundingInfoResDto;
+import com.moa.moabackend.funding.api.response.MyFundingsReturnResDto;
+import com.moa.moabackend.funding.api.response.MyFundingsReturnResDto.MyFundingReturnInfoResDto;
+import com.moa.moabackend.global.entity.Status;
 import com.moa.moabackend.member.domain.Coupon;
 import com.moa.moabackend.member.domain.Member;
 import com.moa.moabackend.member.domain.repository.CouponRepository;
@@ -105,6 +108,21 @@ public class FundingService {
                 .toList();
 
         return MyFundingsResDto.from(myFundingInfoResDtos);
+    }
+
+    // 내 펀딩 리턴 확인하기
+    public MyFundingsReturnResDto getMyFundingsReturn(String email) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+        List<StoreFunding> returnStoreFundings = storeFundingRepository.findByMemberAndStatus(member);
+
+        List<MyFundingReturnInfoResDto> myFundingReturnInfoResDtos = returnStoreFundings.stream()
+                .map(storeFunding -> MyFundingReturnInfoResDto.of(
+                        storeFunding.getStore().getName(),
+                        storeFunding.getStatus() == Status.UN_ACTIVE,
+                        storeFunding.getAmount()))
+                .toList();
+
+        return MyFundingsReturnResDto.from(myFundingReturnInfoResDtos);
     }
 
 }

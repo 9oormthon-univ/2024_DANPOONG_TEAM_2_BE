@@ -41,7 +41,7 @@ public interface MemberControllerDocs {
     })
     RspTemplate<MemberCouponsResDto> findCoupons(@AuthenticationPrincipal Member member);
 
-    @Operation(summary = "내 펀딩 내역 조회 API", description = "내 펀딩 내역을 조회하는 API 입니다.")
+    @Operation(summary = "내 펀딩 내역 조회 API - 포트폴리오 - My 투자 내역 뷰에서 사용", description = "내 펀딩 내역을 조회하는 API 입니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "펀딩 내역 조회 성공")
     })
