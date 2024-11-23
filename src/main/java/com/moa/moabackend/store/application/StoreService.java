@@ -17,6 +17,7 @@ import com.moa.moabackend.store.domain.repository.StoreImageRepository;
 import com.moa.moabackend.store.domain.repository.StoreLocationRepository;
 import com.moa.moabackend.store.domain.repository.StoreRepository;
 import com.moa.moabackend.store.domain.repository.StoreScrapRepository;
+import com.moa.moabackend.store.exception.AlreadyScrapedException;
 import com.moa.moabackend.store.exception.RevGeocodeNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
@@ -84,8 +85,11 @@ public class StoreService {
     }
 
     public StoreResDto makeStoreDto(Long storeId, Store store) {
+        Boolean isFinished = store.getFundingCurrent() >= store.getFundingTarget() || store.getEndAt().isBefore(
+                java.time.LocalDate.now());
         StoreResDto result = new StoreResDto(
                 storeId,
+                isFinished,
                 store.getName(),
                 store.getCategory(),
                 store.getProfileImage(),
@@ -223,7 +227,12 @@ public class StoreService {
         Member member = memberRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("유효하지 않은 회원입니다."));
 
-        // 3. 해당 유저의 상점 스크랩 정보 저장
+        // 3. 이미 해당 상점을 찜했는지 검사
+        if (storeScrapRepository.existsByMember_idAndStore_id(userId, storeId)) {
+            throw new AlreadyScrapedException();
+        }
+
+        // 4. 해당 유저의 상점 스크랩 정보 저장
         StoreScrap storeScrap = StoreScrap.builder().member(member).store(store).build();
         storeScrapRepository.save(storeScrap);
     }
