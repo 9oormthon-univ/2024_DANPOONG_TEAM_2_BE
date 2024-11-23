@@ -89,6 +89,9 @@ public class StoreService {
 
     public List<StoreResDto> getAllStores() {
         List<Store> stores = storeRepository.findAll();
+        if (stores.isEmpty()) {
+            throw new EntityNotFoundException("등록된 상점을 1개 이상 찾을 수 없었습니다.");
+        }
         return stores.stream().map(store -> makeStoreDto(store.getId(), store)).collect(Collectors.toList());
     }
 
@@ -275,6 +278,10 @@ public class StoreService {
         Pageable pageable = PageRequest.of(page, size);
         Page<Store> stores = storeRepository.findTopNStoresByCertifiedTypeOrderByScrapCount(certifiedType,
                 pageable);
+
+        if (stores.isEmpty()) {
+            throw new EntityNotFoundException("조건에 일치하는 상점이 없습니다.");
+        }
 
         List<StoreResDto> result = new ArrayList<StoreResDto>();
         for (Store s : stores) {

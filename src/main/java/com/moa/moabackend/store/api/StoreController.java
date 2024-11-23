@@ -56,15 +56,17 @@ public class StoreController implements StoreControllerDocs {
 
     @GetMapping("/all")
     @Transactional(readOnly = true)
-    public RspTemplate<List<StoreResDto>> getMethodName() {
+    public RspTemplate<List<StoreResDto>> getAllStores() {
         List<StoreResDto> result = new ArrayList<StoreResDto>();
         try {
             result = storeService.getAllStores();
+        } catch (EntityNotFoundException e) {
+            return new RspTemplate<>(HttpStatus.NOT_FOUND, "등록된 상점을 1개 이상 찾을 수 없었습니다.", null);
         } catch (Exception e) {
             e.printStackTrace();
             return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "상점을 찾는 중 문제가 발생했습니다.", null);
         }
-        return new RspTemplate<>(HttpStatus.OK, "전체 상점 조회", result);
+        return new RspTemplate<>(HttpStatus.OK, "상점 전체 조회", result);
     }
 
     @GetMapping("/{id}")
@@ -191,7 +193,7 @@ public class StoreController implements StoreControllerDocs {
             result = storeService.getTopNStoreList(getStoreListDto.certifiedType(), getStoreListDto.page(),
                     getStoreListDto.size());
         } catch (EntityNotFoundException e) {
-            return new RspTemplate<>(HttpStatus.NOT_FOUND, "상점 리스트를 만들 상점이 없습니다.", null);
+            return new RspTemplate<>(HttpStatus.NOT_FOUND, "조건에 일치하는 상점이 없습니다.", null);
         } catch (Exception e) {
             e.printStackTrace();
             return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "상점 리스트를 가져오는 중 문제가 발생했습니다.", null);
@@ -199,25 +201,4 @@ public class StoreController implements StoreControllerDocs {
 
         return new RspTemplate<>(HttpStatus.OK, "상점 리스트 조회", result);
     }
-
-    // @GetMapping("/store/curation")
-    // public RspTemplate<List<StoreResDto>> getCuration(@RequestBody GetCurationDto
-    // getCurationDto) {
-    // List<StoreResDto> result = new ArrayList<StoreResDto>();
-    // try {
-    // List<StoreResDto> stores =
-    // storeService.getOneCertified(getCurationDto.certifiedType());
-    // result.addAll(stores);
-    // } catch (EntityNotFoundException e) {
-    // return new RspTemplate<>(HttpStatus.NOT_FOUND, "찜하지 않은 상태에서 찜하기 취소를 시도했습니다.",
-    // null);
-    // } catch (Exception e) {
-    // e.printStackTrace();
-    // return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "상점 찜하기 취소 처리 중
-    // 문제가 발생했습니다.", null);
-    // }
-
-    // return new RspTemplate<>(HttpStatus.OK, "상점 찜하기 취소", result);
-    // }
-
 }
