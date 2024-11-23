@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -50,6 +51,19 @@ public class StoreController implements StoreControllerDocs {
             return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "상점 생성 중 문제가 발생했습니다.", null);
         }
         return new RspTemplate<>(HttpStatus.OK, "상점 생성", result);
+    }
+
+    @GetMapping("/all")
+    @Transactional(readOnly = true)
+    public RspTemplate<List<StoreResDto>> getMethodName() {
+        List<StoreResDto> result = new ArrayList<StoreResDto>();
+        try {
+            result = storeService.getAllStores();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "상점을 찾는 중 문제가 발생했습니다.", null);
+        }
+        return new RspTemplate<>(HttpStatus.OK, "전체 상점 조회", result);
     }
 
     @GetMapping("/{id}")
