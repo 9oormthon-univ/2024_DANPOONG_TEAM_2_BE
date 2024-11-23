@@ -12,22 +12,31 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface StoreRepository extends JpaRepository<Store, Long> {
-    Optional<Store> findById(Long id);
+        Optional<Store> findById(Long id);
 
-    Optional<Store> findByName(String name);
+        Optional<Store> findByName(String name);
 
-    @Override
-    <S extends Store> S save(S store);
+        @Override
+        <S extends Store> S save(S store);
 
-    void deleteById(Long id);
+        void deleteById(Long id);
 
-    @Query("SELECT s FROM Store s " +
-            "LEFT JOIN s.storeScraps ss " +
-            "WHERE :certifiedType MEMBER OF s.certifiedType " +
-            "GROUP BY s " +
-            "ORDER BY COUNT(ss) DESC")
-    Page<Store> findTopNStoresByCertifiedTypeOrderByScrapCount(
-            @Param("certifiedType") CertifiedType certifiedType,
-            Pageable pageable);
+        @Query("SELECT s FROM Store s " +
+                        "LEFT JOIN s.storeScraps ss " +
+                        "WHERE :certifiedType MEMBER OF s.certifiedType " +
+                        "GROUP BY s " +
+                        "ORDER BY COUNT(ss) DESC")
+        Page<Store> findTopNStoresByCertifiedTypeOrderByScrapCount(
+                        @Param("certifiedType") CertifiedType certifiedType,
+                        Pageable pageable);
+
+        @Query("SELECT s FROM Store s " +
+                        "LEFT JOIN s.storeFundings ss " +
+                        "WHERE :certifiedType MEMBER OF s.certifiedType " +
+                        "GROUP BY s " +
+                        "ORDER BY COUNT(ss) DESC")
+        Page<Store> findTopNStoresByCertifiedTypeOrderByFundingCount(
+                        @Param("certifiedType") CertifiedType certifiedType,
+                        Pageable pageable);
 
 }

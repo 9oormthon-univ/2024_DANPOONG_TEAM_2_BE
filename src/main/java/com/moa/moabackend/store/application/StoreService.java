@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moa.moabackend.member.domain.Member;
 import com.moa.moabackend.member.domain.repository.MemberRepository;
+import com.moa.moabackend.member.exception.MemberNotFoundException;
 import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.AddressResDto;
 import com.moa.moabackend.store.api.dto.response.StoreResDto;
@@ -19,6 +20,8 @@ import com.moa.moabackend.store.domain.repository.StoreRepository;
 import com.moa.moabackend.store.domain.repository.StoreScrapRepository;
 import com.moa.moabackend.store.exception.AlreadyScrapedException;
 import com.moa.moabackend.store.exception.RevGeocodeNotFoundException;
+import com.moa.moabackend.store.exception.StoreNotFoundException;
+
 import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.net.URI;
@@ -291,16 +294,33 @@ public class StoreService {
         return result;
     }
 
-    // public List<StoreResDto> getOneCertified(CertifiedType certifiedType) {
-    // List<Store> stores =
-    // storeRepository.findByCertifiedTypeOrderByScrapCountDesc(certifiedType)
-    // .orElseThrow(() -> new NotFoundException(""));
+    public List<StoreResDto> getStoreListByFavoriteType(Long userId) {
+        // 1. 받은 userId로 회원 객체 확보
+        Member member = memberRepository.findById(userId)
+                .orElseThrow(() -> new MemberNotFoundException());
 
-    // List<StoreResDto> result = new ArrayList<StoreResDto>();
-    // for (Store s : stores) {
-    // result.add(makeStoreDto(s.getId(), s));
-    // }
+        // 2. 회원의 즐겨찾기 타입 조회
+        List<CertifiedType> favoriteTypes = member.getCertifiedType();
 
-    // return result;
-    // }
+        if (favoriteTypes.isEmpty()) {
+            throw new EntityNotFoundException("즐겨찾기 타입이 없습니다.");
+        }
+
+        List<Store> result = new ArrayList<>();
+        for (CertifiedType type : favoriteTypes) {
+            // 3-1. 해당 관심분야에서 가장 많은 펀딩을 받은 상점 Top 1 추출
+            Pageable pageable = PageRequest.of(0, 1);
+            Page<Store> stores = storeRepository.findTopNStoresByCertifiedTypeOrderByFundingCount(type,
+                    pageable);
+
+            // 3-2. 추출된 상점 추가
+            result.add(stores.getContent().get(0));
+        }
+
+        if (result.isEmpty()) {
+            throw new StoreNotFoundException("해당 관심분야로 개설된 상점이 단 한개도 없습니다");
+        }
+
+        return result.stream().map(s -> makeStoreDto(s.getId(), s)).collect(Collectors.toList());
+    }
 }

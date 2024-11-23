@@ -103,4 +103,13 @@ public interface StoreControllerDocs {
                         @ApiResponse(responseCode = "500", description = "상점 리스트를 불러오는 중 문제가 발생했습니다.")
         })
         RspTemplate<List<StoreResDto>> getStoreList(@RequestBody GetStoreListDto getStoreListDto);
+
+        @Operation(summary = "관심분야 기반 상점 추천", description = "사전에 지정된 CertifiedType에 따라 각각 가장 펀딩 수가 많은 상점 하나씩을 추천합니다.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "조건에 일치하는 상점 리스트를 정상적으로 조회했습니다."),
+                        @ApiResponse(responseCode = "404", description = "조건에 일치하는 상점이 없습니다."),
+                        @ApiResponse(responseCode = "500", description = "상점 리스트를 불러오는 중 문제가 발생했습니다.")
+        })
+        RspTemplate<List<StoreResDto>> getStoreListByFavoriteType(@AuthenticationPrincipal Member member);
+
 }
