@@ -1,34 +1,30 @@
 package com.moa.moabackend.store.api;
 
-import java.io.IOException;
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.moa.moabackend.global.template.RspTemplate;
 import com.moa.moabackend.member.domain.Member;
-import com.moa.moabackend.store.api.dto.request.SearchByLocationReqDto;
 import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.StoreResDto;
 import com.moa.moabackend.store.application.StoreService;
 import com.moa.moabackend.store.domain.Store;
 import com.moa.moabackend.store.exception.RevGeocodeNotFoundException;
-
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import jakarta.persistence.EntityNotFoundException;
+import java.io.IOException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/store")
@@ -109,10 +105,10 @@ public class StoreController implements StoreControllerDocs {
     @GetMapping("/map/search")
     @Transactional(readOnly = true)
     public RspTemplate<List<StoreResDto>> searchStoreByAddress(
-            @RequestBody SearchByLocationReqDto searchByLocationReqDto) {
+            @RequestParam(name = "address") String address) {
         List<StoreResDto> result = null;
         try {
-            List<StoreResDto> store = storeService.searchStoreByAddress(searchByLocationReqDto);
+            List<StoreResDto> store = storeService.searchStoreByAddress(address);
             result = store;
         } catch (EntityNotFoundException e) {
             return new RspTemplate<>(HttpStatus.NOT_FOUND, "검색된 상점이 없습니다.", null);
@@ -141,7 +137,7 @@ public class StoreController implements StoreControllerDocs {
 
     @PostMapping("/scrap/{id}")
     public RspTemplate<Boolean> scrapStore(@AuthenticationPrincipal Member member,
-            @Parameter(name = "id", description = "상점 ID", in = ParameterIn.PATH) @PathVariable(name = "id") Long storeId) {
+                                           @Parameter(name = "id", description = "상점 ID", in = ParameterIn.PATH) @PathVariable(name = "id") Long storeId) {
         try {
             storeService.scrapStore(storeId, member.getId());
         } catch (EntityNotFoundException e) {
@@ -156,7 +152,7 @@ public class StoreController implements StoreControllerDocs {
 
     @DeleteMapping("/scrap/{id}")
     public RspTemplate<Boolean> unscrapStore(@AuthenticationPrincipal Member member,
-            @Parameter(name = "id", description = "상점 ID", in = ParameterIn.PATH) @PathVariable(name = "id") Long storeId) {
+                                             @Parameter(name = "id", description = "상점 ID", in = ParameterIn.PATH) @PathVariable(name = "id") Long storeId) {
         try {
             storeService.unscrapStore(storeId, member.getId());
         } catch (EntityNotFoundException e) {

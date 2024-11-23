@@ -1,23 +1,9 @@
 package com.moa.moabackend.store.application;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moa.moabackend.member.domain.Member;
 import com.moa.moabackend.member.domain.repository.MemberRepository;
-import com.moa.moabackend.store.api.dto.request.SearchByLocationReqDto;
 import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.AddressResDto;
 import com.moa.moabackend.store.api.dto.response.StoreResDto;
@@ -31,9 +17,19 @@ import com.moa.moabackend.store.domain.repository.StoreLocationRepository;
 import com.moa.moabackend.store.domain.repository.StoreRepository;
 import com.moa.moabackend.store.domain.repository.StoreScrapRepository;
 import com.moa.moabackend.store.exception.RevGeocodeNotFoundException;
-
 import jakarta.persistence.EntityNotFoundException;
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -175,8 +171,8 @@ public class StoreService {
         return result;
     }
 
-    public List<StoreResDto> searchStoreByAddress(SearchByLocationReqDto payload) {
-        List<StoreLocation> storeLocation = storeLocationRepository.findByAddressContaining(payload.address())
+    public List<StoreResDto> searchStoreByAddress(String address) {
+        List<StoreLocation> storeLocation = storeLocationRepository.findByAddressContaining(address)
                 .orElseThrow(() -> new EntityNotFoundException("주소가 일치하는 상점을 찾을 수 없습니다."));
 
         List<StoreResDto> result = new ArrayList<StoreResDto>();
