@@ -15,6 +15,8 @@ import com.moa.moabackend.voucher.api.request.ExchangeVoucherReqDto;
 import com.moa.moabackend.voucher.api.request.ReturnMileageReqDto;
 import com.moa.moabackend.voucher.domain.Voucher;
 import com.moa.moabackend.voucher.domain.repository.VoucherRepository;
+import com.moa.moabackend.voucher.exception.InsufficientMileageException;
+import com.moa.moabackend.voucher.exception.MileageAlreadyReturnException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,7 +41,7 @@ public class VoucherService {
                 .orElseThrow(StoreFundingNotFoundException::new);
 
         if (storeFunding.getStatus() == Status.UN_ACTIVE) {
-            throw new IllegalStateException("이미 마일리지 반환받았습니다.");
+            throw new MileageAlreadyReturnException();
         }
 
         storeFunding.updateStatus();
@@ -52,7 +54,7 @@ public class VoucherService {
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
 
         if (member.getMileage() < exchangeVoucherReqDto.voucherAmount()) {
-            throw new IllegalStateException("마일리지가 부족합니다.");
+            throw new InsufficientMileageException();
         }
 
         member.minusMileage(exchangeVoucherReqDto.voucherAmount());
@@ -74,7 +76,11 @@ public class VoucherService {
                 .orElseThrow(StoreFundingNotFoundException::new);
 
         if (storeFunding.getStatus() == Status.UN_ACTIVE) {
-            throw new IllegalStateException("이미 마일리지 반환받았습니다.");
+            throw new MileageAlreadyReturnException();
+        }
+
+        if (member.getMileage() < exchangeVoucherDirectlyReqDto.voucherAmount()) {
+            throw new InsufficientMileageException();
         }
 
         storeFunding.updateStatus();
