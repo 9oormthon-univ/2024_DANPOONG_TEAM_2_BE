@@ -7,6 +7,7 @@ import com.moa.moabackend.member.domain.repository.MemberRepository;
 import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.AddressResDto;
 import com.moa.moabackend.store.api.dto.response.StoreResDto;
+import com.moa.moabackend.store.domain.CertifiedType;
 import com.moa.moabackend.store.domain.Store;
 import com.moa.moabackend.store.domain.StoreImage;
 import com.moa.moabackend.store.domain.StoreLocation;
@@ -29,6 +30,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -262,6 +266,19 @@ public class StoreService {
         for (StoreScrap scrap : storeScraps) {
             Long storeId = scrap.getStore().getId();
             result.add(makeStoreDto(storeId, scrap.getStore()));
+        }
+
+        return result;
+    }
+
+    public List<StoreResDto> getTopNStoreList(CertifiedType certifiedType, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Store> stores = storeRepository.findTopNStoresByCertifiedTypeOrderByScrapCount(certifiedType,
+                pageable);
+
+        List<StoreResDto> result = new ArrayList<StoreResDto>();
+        for (Store s : stores) {
+            result.add(makeStoreDto(s.getId(), s));
         }
 
         return result;

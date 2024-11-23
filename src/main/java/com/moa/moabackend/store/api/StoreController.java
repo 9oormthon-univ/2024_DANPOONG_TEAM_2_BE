@@ -2,6 +2,7 @@ package com.moa.moabackend.store.api;
 
 import com.moa.moabackend.global.template.RspTemplate;
 import com.moa.moabackend.member.domain.Member;
+import com.moa.moabackend.store.api.dto.request.GetStoreListDto;
 import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.StoreResDto;
 import com.moa.moabackend.store.application.StoreService;
@@ -180,6 +181,23 @@ public class StoreController implements StoreControllerDocs {
         }
 
         return new RspTemplate<>(HttpStatus.OK, "상점 찜하기 취소", true);
+    }
+
+    @GetMapping("/list")
+    @Transactional(readOnly = true)
+    public RspTemplate<List<StoreResDto>> getStoreList(@RequestBody GetStoreListDto getStoreListDto) {
+        List<StoreResDto> result = null;
+        try {
+            result = storeService.getTopNStoreList(getStoreListDto.certifiedType(), getStoreListDto.page(),
+                    getStoreListDto.size());
+        } catch (EntityNotFoundException e) {
+            return new RspTemplate<>(HttpStatus.NOT_FOUND, "상점 리스트를 만들 상점이 없습니다.", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "상점 리스트를 가져오는 중 문제가 발생했습니다.", null);
+        }
+
+        return new RspTemplate<>(HttpStatus.OK, "상점 리스트 조회", result);
     }
 
     // @GetMapping("/store/curation")
