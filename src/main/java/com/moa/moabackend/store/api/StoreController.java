@@ -188,7 +188,7 @@ public class StoreController implements StoreControllerDocs {
         return new RspTemplate<>(HttpStatus.OK, "상점 찜하기 취소", true);
     }
 
-    @GetMapping("/list")
+    @PostMapping("/list")
     @Transactional(readOnly = true)
     public RspTemplate<List<StoreResDto>> getStoreList(@RequestBody GetStoreListDto getStoreListDto) {
         List<StoreResDto> result = null;
