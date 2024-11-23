@@ -6,7 +6,7 @@ public enum MemberType {
     INVESTOR("투자자"),
     BUSINESS("업체");
 
-    private String description;
+    public String description;
 
     MemberType(String description) {
         this.description = description;

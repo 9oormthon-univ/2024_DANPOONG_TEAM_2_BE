@@ -2,6 +2,7 @@ package com.moa.moabackend.store.api;
 
 import com.moa.moabackend.global.template.RspTemplate;
 import com.moa.moabackend.member.domain.Member;
+import com.moa.moabackend.member.exception.MemberNotFoundException;
 import com.moa.moabackend.store.api.dto.request.GetStoreListDto;
 import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.StoreResDto;
@@ -9,6 +10,8 @@ import com.moa.moabackend.store.application.StoreService;
 import com.moa.moabackend.store.domain.Store;
 import com.moa.moabackend.store.exception.AlreadyScrapedException;
 import com.moa.moabackend.store.exception.RevGeocodeNotFoundException;
+import com.moa.moabackend.store.exception.StoreNotFoundException;
+
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import jakarta.persistence.EntityNotFoundException;
@@ -201,4 +204,25 @@ public class StoreController implements StoreControllerDocs {
 
         return new RspTemplate<>(HttpStatus.OK, "상점 리스트 조회", result);
     }
+
+    @GetMapping("/curation")
+    @Transactional(readOnly = true)
+    public RspTemplate<List<StoreResDto>> getStoreListByFavoriteType(@AuthenticationPrincipal Member member) {
+        List<StoreResDto> result = null;
+        try {
+            result = storeService.getStoreListByFavoriteType(member.getId());
+        } catch (MemberNotFoundException e) {
+            return new RspTemplate<>(HttpStatus.BAD_REQUEST, "유효하지 않은 회원입니다.", null);
+        } catch (StoreNotFoundException e) {
+            return new RspTemplate<>(HttpStatus.NOT_FOUND, "해당 관심분야로 개설된 상점이 단 한개도 없습니다.", null);
+        } catch (EntityNotFoundException e) {
+            return new RspTemplate<>(HttpStatus.BAD_REQUEST, "관심분야를 설정하지 않았습니다.", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "상점을 추천하는 중 문제가 발생했습니다.", null);
+        }
+
+        return new RspTemplate<>(HttpStatus.OK, "관심분야 기반 상점 추천", result);
+    }
+
 }

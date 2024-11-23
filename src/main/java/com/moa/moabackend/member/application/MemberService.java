@@ -3,8 +3,8 @@ package com.moa.moabackend.member.application;
 import com.moa.moabackend.member.api.dto.response.CouponInfoResDto;
 import com.moa.moabackend.member.api.dto.response.MemberCouponsResDto;
 import com.moa.moabackend.member.api.dto.response.MemberInfoResDto;
-import com.moa.moabackend.member.api.dto.response.MyPundingHistoryResDto;
-import com.moa.moabackend.member.api.dto.response.MyPundingHistoryResDto.HistoryInfoResDto;
+import com.moa.moabackend.member.api.dto.response.MyFundingHistoryResDto;
+import com.moa.moabackend.member.api.dto.response.MyFundingHistoryResDto.HistoryInfoResDto;
 import com.moa.moabackend.member.domain.Coupon;
 import com.moa.moabackend.member.domain.Member;
 import com.moa.moabackend.member.domain.MemberType;
@@ -83,19 +83,25 @@ public class MemberService {
         return MemberCouponsResDto.from(couponInfoResDtos);
     }
 
-    public MyPundingHistoryResDto getMyPundingHistory(String email) {
+    public MyFundingHistoryResDto getMyFundingHistory(String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
         List<StoreFunding> storeFundings = storeFundingRepository.findByMember(member);
 
         List<HistoryInfoResDto> historyInfoResDtos = storeFundings.stream()
-                .map(storePunding -> HistoryInfoResDto.of(
-                        storePunding.getStore().getId(),
-                        storePunding.getCreatedAt(),
-                        storePunding.getStore().getName(),
-                        storePunding.getAmount()))
+                .map(storeFunding -> HistoryInfoResDto.of(
+                        storeFunding.getStore().getId(),
+                        storeFunding.getCreatedAt(),
+                        storeFunding.getStore().getName(),
+                        storeFunding.getAmount()))
                 .toList();
 
-        return MyPundingHistoryResDto.of(member.getMileage(), historyInfoResDtos);
+        return MyFundingHistoryResDto.of(member.getMileage(), historyInfoResDtos);
+    }
+
+    @Transactional
+    public void setFavoriteCertifiedTypes(String email, List<CertifiedType> certifiedTypes) {
+        Member member = memberRepository.findByEmail(email).orElseThrow(MemberNotFoundException::new);
+        member.updateCertifiedTypes(certifiedTypes);
     }
 
 }
