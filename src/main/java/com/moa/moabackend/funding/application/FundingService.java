@@ -100,7 +100,7 @@ public class FundingService {
                                     storeFunding.getStore().getId(),
                                     storeFunding.getStore().getName(),
                                     storeFunding.getStore().getProfileImage(),
-                                    fundingTarget > fundingCurrent,
+                                    fundingTarget <= fundingCurrent,
                                     storeFunding.getAmount());
                         }
 
