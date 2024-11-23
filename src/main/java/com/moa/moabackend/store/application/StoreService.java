@@ -7,7 +7,6 @@ import com.moa.moabackend.member.domain.repository.MemberRepository;
 import com.moa.moabackend.store.api.dto.request.StoreReqDto;
 import com.moa.moabackend.store.api.dto.response.AddressResDto;
 import com.moa.moabackend.store.api.dto.response.StoreResDto;
-import com.moa.moabackend.store.domain.CertifiedType;
 import com.moa.moabackend.store.domain.Store;
 import com.moa.moabackend.store.domain.StoreImage;
 import com.moa.moabackend.store.domain.StoreLocation;
@@ -84,6 +83,11 @@ public class StoreService {
         return makeStoreDto(storeId, store);
     }
 
+    public List<StoreResDto> getAllStores() {
+        List<Store> stores = storeRepository.findAll();
+        return stores.stream().map(store -> makeStoreDto(store.getId(), store)).collect(Collectors.toList());
+    }
+
     public StoreResDto makeStoreDto(Long storeId, Store store) {
         Boolean isFinished = store.getFundingCurrent() >= store.getFundingTarget() || store.getEndAt().isBefore(
                 java.time.LocalDate.now());
@@ -155,10 +159,6 @@ public class StoreService {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new EntityNotFoundException("ID가 일치하는 상점을 찾을 수 없습니다."));
         storeRepository.delete(store);
-    }
-
-    public List<Store> getAllStores() {
-        return storeRepository.findAll();
     }
 
     public List<Store> getStoresByLocation(Long radius, Double x, Double y) {
