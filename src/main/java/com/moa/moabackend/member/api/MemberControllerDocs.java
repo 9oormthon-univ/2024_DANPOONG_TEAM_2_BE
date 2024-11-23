@@ -1,6 +1,7 @@
 package com.moa.moabackend.member.api;
 
 import com.moa.moabackend.global.template.RspTemplate;
+import com.moa.moabackend.member.api.dto.request.FavoriteCertificatedType;
 import com.moa.moabackend.member.api.dto.request.InvestmentGoalUpdateReqDto;
 import com.moa.moabackend.member.api.dto.request.MemberTypeUpdateReqDto;
 import com.moa.moabackend.member.api.dto.response.MemberCouponsResDto;
@@ -47,4 +48,12 @@ public interface MemberControllerDocs {
         })
         RspTemplate<MyFundingHistoryResDto> findMyPundingHistory(@AuthenticationPrincipal Member member);
 
+        @Operation(summary = "관심분야 기반 상점 추천", description = "사전에 지정된 CertifiedType에 따라 각각 가장 펀딩 수가 많은 상점 하나씩을 추천합니다.")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "200", description = "조건에 일치하는 상점 리스트를 정상적으로 조회했습니다."),
+                        @ApiResponse(responseCode = "404", description = "조건에 일치하는 상점이 없습니다."),
+                        @ApiResponse(responseCode = "500", description = "상점 리스트를 불러오는 중 문제가 발생했습니다.")
+        })
+        RspTemplate<Boolean> setFavoriteCertifiedTypes(@AuthenticationPrincipal Member member,
+                        @RequestBody FavoriteCertificatedType payload);
 }

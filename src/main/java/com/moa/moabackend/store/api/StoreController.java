@@ -219,10 +219,10 @@ public class StoreController implements StoreControllerDocs {
             return new RspTemplate<>(HttpStatus.BAD_REQUEST, "관심분야를 설정하지 않았습니다.", null);
         } catch (Exception e) {
             e.printStackTrace();
-            return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "상점 리스트를 가져오는 중 문제가 발생했습니다.", null);
+            return new RspTemplate<>(HttpStatus.INTERNAL_SERVER_ERROR, "상점을 추천하는 중 문제가 발생했습니다.", null);
         }
 
-        return new RspTemplate<>(HttpStatus.OK, "상점 리스트 조회", result);
+        return new RspTemplate<>(HttpStatus.OK, "관심분야 기반 상점 추천", result);
     }
 
 }
